@@ -1,0 +1,120 @@
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class ApiService {
+
+  constructor(private http: HttpClient) {}
+
+  // Function to fetch data from the API and cache under a specific key
+  getDataFromApi(apiUrl: string, responseKey: string): Observable<any> {
+    // Get cached data from localStorage
+    const cachedData = localStorage.getItem('apiResponses');
+
+    let responses = cachedData ? JSON.parse(cachedData) : {};
+
+    if (responses[responseKey]) {
+      // If the response for this key already exists, return it as an Observable
+      return new Observable(observer => {
+        observer.next(responses[responseKey]);
+        observer.complete();
+      });
+    } else {
+      // If no cached data, make the API call
+      return this.http.get(apiUrl).pipe(
+        catchError(err => {
+          console.error('API error:', err);
+          throw err;
+        }),
+        // Cache the response in localStorage
+        tap(data => {
+          responses[responseKey] = data;
+          localStorage.setItem('apiResponses', JSON.stringify(responses));
+        })
+      );
+    }
+  }
+
+  // Function to clear all cached responses
+  clearCache(): void {
+    localStorage.removeItem('apiResponses');
+  }
+
+  // Function to clear a specific response from the cache by its key
+  clearCacheByKey(responseKey: string): void {
+    const cachedData = localStorage.getItem('apiResponses');
+    if (cachedData) {
+      const responses = JSON.parse(cachedData);
+      delete responses[responseKey];
+      localStorage.setItem('apiResponses', JSON.stringify(responses));
+    }
+  }
+}
+
+---------------------------------------component------------------------------------------------
+
+
+import { Component, OnInit } from '@angular/core';
+import { ApiService } from './api.service';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css'],
+})
+export class AppComponent implements OnInit {
+  apiData: any;
+  apiUrl = 'https://api.example.com/data'; // Replace with your actual API URL
+
+  constructor(private apiService: ApiService) {}
+
+  ngOnInit(): void {
+    const responseKey = 'response1'; // Unique key for the API response
+
+    // Fetch data with caching logic
+    this.apiService.getDataFromApi(this.apiUrl, responseKey).subscribe(data => {
+      this.apiData = data;
+    });
+  }
+
+  clearCache(): void {
+    this.apiService.clearCache();
+    console.log('Cache cleared');
+  }
+
+  clearSpecificCache(): void {
+    const responseKey = 'response1'; // The key you want to clear
+    this.apiService.clearCacheByKey(responseKey);
+    console.log(`Cache for ${responseKey} cleared`);
+  }
+}
+
+
+cacheDataWithExpiry(apiUrl: string, responseKey: string, data: any, expiryTime: number): void {
+  const responses = JSON.parse(localStorage.getItem('apiResponses') || '{}');
+  const expiry = new Date().getTime() + expiryTime; // expiry time in milliseconds
+  responses[responseKey] = { data, expiry };
+  localStorage.setItem('apiResponses', JSON.stringify(responses));
+}
+
+----------------------------------------------Alternate Approach------------------------------------------------------------
+
+
+getDataWithExpiry(apiUrl: string, responseKey: string): Observable<any> {
+  const responses = JSON.parse(localStorage.getItem('apiResponses') || '{}');
+  const cachedResponse = responses[responseKey];
+  
+  if (cachedResponse && new Date().getTime() < cachedResponse.expiry) {
+    return new Observable(observer => {
+      observer.next(cachedResponse.data);
+      observer.complete();
+    });
+  } else {
+    return this.getDataFromApi(apiUrl, responseKey);
+  }
+}
+
