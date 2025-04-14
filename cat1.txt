@@ -1,0 +1,3 @@
+  <mat-error *ngIf="myForm.get('myTextField').hasError('minlength')">
+      Minimum length is 3 characters
+    </mat-error>
