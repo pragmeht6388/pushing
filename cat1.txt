@@ -1,3 +1,5 @@
   <mat-error *ngIf="myForm.get('myTextField').hasError('minlength')">
       Minimum length is 3 characters
     </mat-error>
+
+Provide an overridable implementation of Dispose(bool) on 'UnitOfWork' or mark the type as sealed. A call to Dispose(false) should only clean up native resources. A call to Dispose(true) should clean up both managed and native resources.
