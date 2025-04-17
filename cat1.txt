@@ -6,47 +6,24 @@ For improved performance, use the LoggerMessage delegates instead of calling 'Lo
 
 
 
-public class UnitOfWork : IDisposable
-{
-    // Flag: Has Dispose already been called?
-    private bool _disposed = false;
+ private static readonly Action<ILogger, string, Exception?> _logDebugMessage =
+        LoggerMessage.Define<string>(
+            LogLevel.Debug,
+            new EventId(1, "DebugMessage"),
+            "Processing request: {RequestId}");
 
-    // Example of a managed resource
-    private readonly DbContext _context;
+    private readonly ILogger<SomeService> _logger;
 
-    // Constructor
-    public UnitOfWork(DbContext context)
+    public SomeService(ILogger<SomeService> logger)
     {
-        _context = context;
+        _logger = logger;
     }
 
-    // Public implementation of Dispose pattern callable by consumers.
-    public void Dispose()
+    public void ProcessRequest(string requestId)
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
+        // Use the LoggerMessage delegate instead of LogDebug
+        _logDebugMessage(_logger, requestId, null);
 
-    // Protected implementation of Dispose pattern.
-    protected virtual void Dispose(bool disposing)
-    {
-        if (_disposed)
-            return;
-
-        if (disposing)
-        {
-            // Dispose managed resources here.
-            _context?.Dispose();
-        }
-
-        // Free unmanaged resources (if any) here.
-
-        _disposed = true;
-    }
-
-    // Destructor (finalizer)
-    ~UnitOfWork()
-    {
-        Dispose(false);
+        // Perform other processing...
     }
 }
