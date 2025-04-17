@@ -3,3 +3,50 @@
     </mat-error>
 
 Provide an overridable implementation of Dispose(bool) on 'UnitOfWork' or mark the type as sealed. A call to Dispose(false) should only clean up native resources. A call to Dispose(true) should clean up both managed and native resources.
+
+
+
+public class UnitOfWork : IDisposable
+{
+    // Flag: Has Dispose already been called?
+    private bool _disposed = false;
+
+    // Example of a managed resource
+    private readonly DbContext _context;
+
+    // Constructor
+    public UnitOfWork(DbContext context)
+    {
+        _context = context;
+    }
+
+    // Public implementation of Dispose pattern callable by consumers.
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    // Protected implementation of Dispose pattern.
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_disposed)
+            return;
+
+        if (disposing)
+        {
+            // Dispose managed resources here.
+            _context?.Dispose();
+        }
+
+        // Free unmanaged resources (if any) here.
+
+        _disposed = true;
+    }
+
+    // Destructor (finalizer)
+    ~UnitOfWork()
+    {
+        Dispose(false);
+    }
+}
