@@ -1,2 +1,7 @@
-
-For improved performance, use the LoggerMessage delegates instead of calling 'LoggerExtensions.LogInformation(ILogger, string?, params object?[])'
+.AddLogging(builder => builder.AddSerilog(new LoggerConfiguration()    
+  .WriteTo.Logger(l => l
+    .Filter.ByExcluding(e => e.Level != LogEventLevel.Warning && e.Level != LogEventLevel.Error)        
+    .WriteTo.File(path: "Logs/information.txt", rollingInterval: RollingInterval.Day, shared: true))
+    .WriteTo.File("Logs/log.txt", rollingInterval: RollingInterval.Day)
+    .MinimumLevel.Information()        
+    .CreateLogger()))
