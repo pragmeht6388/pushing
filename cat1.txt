@@ -1,5 +1,1 @@
-Define a constant instead of using this literal 'phone_number' 5 times.
-private const string PhoneNumberKey = "phone_number";
-
-
-Add a member to UserStatus that has a value of zero with a suggested name of 'None'
+  if(!string.IsNullOrEmpty(item.RedirectUri)) descriptor.RedirectUris.Add(new Uri(item.RedirectUri) );
