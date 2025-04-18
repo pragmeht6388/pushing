@@ -1,1 +1,1 @@
-The ServerCertificateValidationCallback is set to a function that accepts any server certificate, by always returning true. Ensure that server certificates are validated to verify the identity of the server receiving requests.
+        ServicePointManager.ServerCertificateValidationCallback += delegate { return true; };
