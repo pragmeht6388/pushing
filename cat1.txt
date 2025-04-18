@@ -1,5 +1,1 @@
-Call System.IDisposable.Dispose on object created by 'new()' before all references to it are out of scope
-
-Modify 'CopyFiles' to catch a more specific allowed exception type, or rethrow the exception
-
-
+The ServerCertificateValidationCallback is set to a function that accepts any server certificate, by always returning true. Ensure that server certificates are validated to verify the identity of the server receiving requests.
