@@ -8,7 +8,7 @@
 
 
 The behavior of 'LoggerSinkConfiguration.File(string, [LogEventLevel], [string], [IFormatProvider], [long?], [LoggingLevelSwitch], [bool], [bool], [TimeSpan?], [RollingInterval], [bool], [int?], [Encoding], [FileLifecycleHooks], [TimeSpan?])' could vary based on the current user's locale settings. Provide a value for the 'IFormatProvider' argument.
-
+formatter: new Serilog.Formatting.Compact.CompactJsonFormatter())
 
 For improved performance, use the LoggerMessage delegates instead of calling 'LoggerExtensions.LogDebug(ILogger, string?, params object?[])'
 
