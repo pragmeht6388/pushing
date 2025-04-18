@@ -1,1 +1,7 @@
         ServicePointManager.ServerCertificateValidationCallback += delegate { return true; };
+
+ServicePointManager.ServerCertificateValidationCallback +=
+    (sender, certificate, chain, sslPolicyErrors) =>
+    {
+        return sslPolicyErrors == SslPolicyErrors.None;
+    };
