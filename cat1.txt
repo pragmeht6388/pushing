@@ -2,8 +2,7 @@
       Minimum length is 3 characters
     </mat-error>
 
-For improved performance, use the LoggerMessage delegates instead of calling 'LoggerExtensions.LogDebug(ILogger, string?, params object?[])'
-
+Possible null reference argument for parameter 'address' in 'MailAddress.MailAddress(string address)'.
 
 
  private static readonly Action<ILogger, string, Exception?> _logDebugMessage =
