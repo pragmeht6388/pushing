@@ -1,1 +1,1 @@
-   if(!string.IsNullOrEmpty(item.RedirectUri)) descriptor.RedirectUris.Add((item.RedirectUri) );
+Change 'List<int>' in 'EditDocument.CompanyIds' to use 'Collection<T>', 'ReadOnlyCollection<T>' or 'KeyedCollection<K,V>'
