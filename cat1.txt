@@ -1,4 +1,4 @@
-
+public Uri ReturnUrl { get; set; } = new Uri("/connect/token", UriKind.Relative);
 
  public Uri ReturnUrl { get; set; } = "/connect/token";
 NA
