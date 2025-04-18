@@ -1,1 +1,1 @@
-  if(!string.IsNullOrEmpty(item.RedirectUri)) descriptor.RedirectUris.Add(new Uri(item.RedirectUri) );
+   if(!string.IsNullOrEmpty(item.RedirectUri)) descriptor.RedirectUris.Add((item.RedirectUri) );
