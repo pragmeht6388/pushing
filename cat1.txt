@@ -11,7 +11,19 @@ Possible null reference return.
 
     return _accessToken;
 
+ans
 
+var accesstoken = await GetTokenAsync().ConfigureAwait(false);
+UpdateAccessToken(accesstoken);
+
+if (_accessToken is null)
+{
+    throw new InvalidOperationException("Access token was not updated properly.");
+}
+
+return _accessToken;
+
+----------------------------------------------------
 
 'System.Exception' should not be thrown by user code.
 
@@ -19,6 +31,15 @@ Possible null reference return.
 Exception type System.Exception is not sufficiently specific
     return accessToken ?? throw new Exception("Failed to fetch the token");
 
+return accessToken ?? throw new InvalidOperationException("Failed to fetch the token");
+
+
+----------------
 Call System.IDisposable.Dispose on object created by 'new HttpRequestMessage(HttpMethod.Post, tokenUri)' before all references to it are out of scope
 var request =  new HttpRequestMessage(HttpMethod.Post, tokenUri);
 
+
+
+using var request = new HttpRequestMessage(HttpMethod.Post, tokenUri);
+// Modify and send the request
+var response = await httpClient.SendAsync(request);
