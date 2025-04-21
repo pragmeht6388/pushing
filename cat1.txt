@@ -1,2 +1,14 @@
-Microsoft.CSharp.RuntimeBinder.RuntimeBinderException: Cannot apply indexing with [] to an expression of type 'ALD.AldFirst.Core.LanguageExt.ReturnValue<System.Collections.Generic.IDictionary<string,string>>'
-   at CallSite.Target(Closure , CallSite , Object , String )
+ReturnValue<IDictionary<string, string>> result = GetSomeValue();
+if (result.IsSuccess)
+{
+    var dict = result.Value;
+    if (dict.TryGetValue("email", out var email))
+    {
+        Console.WriteLine(email);
+    }
+}
+
+
+dynamic result = GetSomeValue();
+var dict = (IDictionary<string, string>)result.Value;
+string email = dict["email"];
