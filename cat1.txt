@@ -1,1 +1,2 @@
-Remove the underscores from member name ALD.AldFirst.Abstraction.Model.Token.token_type
+Microsoft.CSharp.RuntimeBinder.RuntimeBinderException: Cannot apply indexing with [] to an expression of type 'ALD.AldFirst.Core.LanguageExt.ReturnValue<System.Collections.Generic.IDictionary<string,string>>'
+   at CallSite.Target(Closure , CallSite , Object , String )
