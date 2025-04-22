@@ -1,4 +1,16 @@
-  protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
+  private async Task<ReturnValue<EligibileUser>> GetEligibleUser(ContractDetails contractDetails, Register register)
+  {
+      EligibileUser user = new EligibileUser
+      {
+          EmailAddress = register.EmailAddress,
+          FirstName = contractDetails.result != null ? contractDetails.result.ClientName : null,
+          MobileNo = register.MobileNo,
+          UserType = contractDetails.result == null ? 2 : 1,
+          ClientId = contractDetails.result != null ? contractDetails.result.ClientID : 0,
+          ContractNumber = contractDetails.result != null ? contractDetails.result.ContractNumber.ToString() : "0"
+      };
 
-Refactor this method to reduce its Cognitive Complexity from 18 to the 15 allowed. (csharpsquid:S3776 )
+      return await Task.FromResult(Result.Success<EligibileUser>(user)).ConfigureAwait(false);
+  }
+
+The behavior of 'int.ToString()' could vary based on the current user's locale settings. Replace this call in 'DriverService.GetEligibleUser(ContractDetails, Register)' with a call to 'int.ToString(IFormatProvider)'. (external_roslyn:CA1305)
