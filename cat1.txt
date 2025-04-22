@@ -1,68 +1,8 @@
-  try
-  {
-      var response = await driverService.GetDriver(new ALD.AldFirst.Abstraction.Model.Register { EmailAddress = prospect.Email }).ConfigureAwait(false);
-      if (response.IsSuccess)
-      {
-          prospect.RoleId = 1;
-          var updateStatus = await service.UpdateUser(prospect).ConfigureAwait(false);
-          Log.Logger.Information("Prospect {0} converted to driver: ", prospect.Email);
-          Console.WriteLine("success");
-      }
-      else
-          Console.WriteLine("Failed");
-  }
-  catch (Exception ex)
-  {
-      Log.Logger.Information("Prospect {0} failed convert to driver: ", prospect.Email);
-      Console.WriteLine("Exception : " + ex.Message+" Email: "+ prospect.Email);
-  }
+Dereference of a possibly null reference.
+
+var response = await driverService.GetDriver(new ALD.AldFirst.Abstraction.Model.Register { EmailAddress = prospect.Email }).ConfigureAwait(false);
 
 
-Modify '<Main>$' to catch a more specific allowed exception type, or rethrow the exception
+var prospects = await service.GetAllProspects().ConfigureAwait(false);
 
-
-
-try
-{
-    var response = await driverService.GetDriver(new ALD.AldFirst.Abstraction.Model.Register { EmailAddress = prospect.Email }).ConfigureAwait(false);
-    if (response.IsSuccess)
-    {
-        prospect.RoleId = 1;
-        var updateStatus = await service.UpdateUser(prospect).ConfigureAwait(false);
-        Log.Logger.Information("Prospect {0} converted to driver: ", prospect.Email);
-        Console.WriteLine("success");
-    }
-    else
-    {
-        Console.WriteLine("Failed");
-    }
-}
-catch (HttpRequestException httpEx) // Specific exception for HTTP request issues
-{
-    Log.Logger.Error(httpEx, "HTTP request error when trying to convert prospect {0} to driver.", prospect.Email);
-    Console.WriteLine("HTTP error: " + httpEx.Message + " Email: " + prospect.Email);
-    // Optionally, you can rethrow the exception if needed.
-    throw;
-}
-catch (TimeoutException timeoutEx) // Specific exception for timeout-related issues
-{
-    Log.Logger.Error(timeoutEx, "Timeout occurred while trying to convert prospect {0} to driver.", prospect.Email);
-    Console.WriteLine("Timeout error: " + timeoutEx.Message + " Email: " + prospect.Email);
-    // Optionally, rethrow the exception.
-    throw;
-}
-catch (InvalidOperationException invOpEx) // Example of another specific exception type
-{
-    Log.Logger.Error(invOpEx, "Invalid operation while converting prospect {0} to driver.", prospect.Email);
-    Console.WriteLine("Invalid operation: " + invOpEx.Message + " Email: " + prospect.Email);
-    // Optionally, rethrow the exception.
-    throw;
-}
-catch (Exception ex) // This will catch other general exceptions if necessary
-{
-    Log.Logger.Error(ex, "Unexpected error when converting prospect {0} to driver.", prospect.Email);
-    Console.WriteLine("Exception: " + ex.Message + " Email: " + prospect.Email);
-    // Optionally, you can rethrow the exception or log it for further analysis.
-    throw;
-}
 
