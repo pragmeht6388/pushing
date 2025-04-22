@@ -6,3 +6,12 @@
         }
 
 Either log this exception and handle it, or rethrow it with some contextual information. (csharpsquid:S2139 )
+
+catch (TimeoutException timeoutEx)
+{
+    var message = $"Timeout occurred while trying to convert prospect {prospect.Email} to driver.";
+    Log.Logger.Error(timeoutEx, message);
+    Console.WriteLine("Timeout error: " + timeoutEx.Message + " Email: " + prospect.Email);
+    
+    throw new TimeoutException(message, timeoutEx);
+}
