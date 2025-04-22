@@ -1,18 +1,4 @@
- catch (HttpRequestException httpEx)
- {
-     Log.Logger.Error(httpEx, "HTTP request error when trying to convert prospect {0} to driver.", prospect.Email);
-     Console.WriteLine("HTTP error: " + httpEx.Message + " Email: " + prospect.Email);
-     throw;
- }
+  protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        {
 
-Either log this exception and handle it, or rethrow it with some contextual information. (csharpsquid:S2139 )
-
-catch (HttpRequestException httpEx)
-{
-    var message = $"HTTP request error when trying to convert prospect {prospect.Email} to driver.";
-    Log.Logger.Error(httpEx, message);
-    Console.WriteLine("HTTP error: " + httpEx.Message + " Email: " + prospect.Email);
-
-    throw new HttpRequestException(message, httpEx);
-}
-
+Refactor this method to reduce its Cognitive Complexity from 18 to the 15 allowed. (csharpsquid:S3776 )
