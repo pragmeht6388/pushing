@@ -7,3 +7,17 @@ var prospects = await service.GetAllProspects().ConfigureAwait(false);
 
 Console.WriteLine(prospects.Value.Count());
 Console.ReadLine();
+
+var service = host.Services.GetService<IRoleService>();
+
+if (service == null)
+{
+    Console.WriteLine("IRoleService is not registered in the service provider.");
+}
+else
+{
+    var prospects = await service.GetAllProspects().ConfigureAwait(false);
+    Console.WriteLine(prospects.Value.Count());
+}
+
+Console.ReadLine();
