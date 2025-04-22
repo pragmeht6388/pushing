@@ -1,1 +1,4 @@
 The behavior of 'Convert.ToString(object)' could vary based on the current user's locale settings. Replace this call in 'TransformNonce.Apply(TransformBuilderContext)' with a call to 'Convert.ToString(object, IFormatProvider)'.
+
+
+Convert.ToString(object, System.Globalization.CultureInfo.InvariantCulture)
