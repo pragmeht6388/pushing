@@ -1,1 +1,3 @@
 var prospects = await service.GetAllProspects().ConfigureAwait(false);
+
+Dereference of a possibly null reference. (external_roslyn:CS8602)
