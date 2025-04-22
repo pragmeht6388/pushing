@@ -1,23 +1,8 @@
-var prospects = await service.GetAllProspects().ConfigureAwait(false);
+        catch (TimeoutException timeoutEx)
+        {
+            Log.Logger.Error(timeoutEx, "Timeout occurred while trying to convert prospect {0} to driver.", prospect.Email);
+            Console.WriteLine("Timeout error: " + timeoutEx.Message + " Email: " + prospect.Email);
+            throw;
+        }
 
-Dereference of a possibly null reference. (external_roslyn:CS8602)
-
-var service = host.Services.GetService<IRoleService>();
-var prospects = await service.GetAllProspects().ConfigureAwait(false);
-
-Console.WriteLine(prospects.Value.Count());
-Console.ReadLine();
-
-var service = host.Services.GetService<IRoleService>();
-
-if (service == null)
-{
-    Console.WriteLine("IRoleService is not registered in the service provider.");
-}
-else
-{
-    var prospects = await service.GetAllProspects().ConfigureAwait(false);
-    Console.WriteLine(prospects.Value.Count());
-}
-
-Console.ReadLine();
+Either log this exception and handle it, or rethrow it with some contextual information. (csharpsquid:S2139 )
