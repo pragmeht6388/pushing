@@ -1,9 +1,9 @@
-        catch (TimeoutException timeoutEx)
-        {
-            Log.Logger.Error(timeoutEx, "Timeout occurred while trying to convert prospect {0} to driver.", prospect.Email);
-            Console.WriteLine("Timeout error: " + timeoutEx.Message + " Email: " + prospect.Email);
-            throw;
-        }
+ catch (HttpRequestException httpEx)
+ {
+     Log.Logger.Error(httpEx, "HTTP request error when trying to convert prospect {0} to driver.", prospect.Email);
+     Console.WriteLine("HTTP error: " + httpEx.Message + " Email: " + prospect.Email);
+     throw;
+ }
 
 Either log this exception and handle it, or rethrow it with some contextual information. (csharpsquid:S2139 )
 
