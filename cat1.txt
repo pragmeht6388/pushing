@@ -1,1 +1,1 @@
-..
+var prospects = await service.GetAllProspects().ConfigureAwait(false);
