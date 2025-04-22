@@ -1,14 +1,1 @@
-ReturnValue<IDictionary<string, string>> result = GetSomeValue();
-if (result.IsSuccess)
-{
-    var dict = result.Value;
-    if (dict.TryGetValue("email", out var email))
-    {
-        Console.WriteLine(email);
-    }
-}
-
-
-dynamic result = GetSomeValue();
-var dict = (IDictionary<string, string>)result.Value;
-string email = dict["email"];
+The behavior of 'Convert.ToString(object)' could vary based on the current user's locale settings. Replace this call in 'TransformNonce.Apply(TransformBuilderContext)' with a call to 'Convert.ToString(object, IFormatProvider)'.
