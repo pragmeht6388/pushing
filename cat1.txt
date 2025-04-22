@@ -3,6 +3,21 @@ Dereference of a possibly null reference.
 var response = await driverService.GetDriver(new ALD.AldFirst.Abstraction.Model.Register { EmailAddress = prospect.Email }).ConfigureAwait(false);
 
 
+f (prospect?.Email == null)
+{
+    // Handle the case where Email is null
+    throw new InvalidOperationException("Prospect's email is null.");
+}
+
+var response = await driverService.GetDriver(new ALD.AldFirst.Abstraction.Model.Register { EmailAddress = prospect.Email }).ConfigureAwait(false);
+
+if (response == null)
+{
+    // Handle the case where the response is null
+    throw new InvalidOperationException("No driver information found.");
+}
+
+
 var prospects = await service.GetAllProspects().ConfigureAwait(false);
 
 
