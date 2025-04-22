@@ -14,3 +14,23 @@
   }
 
 The behavior of 'int.ToString()' could vary based on the current user's locale settings. Replace this call in 'DriverService.GetEligibleUser(ContractDetails, Register)' with a call to 'int.ToString(IFormatProvider)'. (external_roslyn:CA1305)
+
+
+using System.Globalization;
+
+private async Task<ReturnValue<EligibileUser>> GetEligibleUser(ContractDetails contractDetails, Register register)
+{
+    EligibileUser user = new EligibileUser
+    {
+        EmailAddress = register.EmailAddress,
+        FirstName = contractDetails.result != null ? contractDetails.result.ClientName : null,
+        MobileNo = register.MobileNo,
+        UserType = contractDetails.result == null ? 2 : 1,
+        ClientId = contractDetails.result != null ? contractDetails.result.ClientID : 0,
+        ContractNumber = contractDetails.result != null 
+                         ? contractDetails.result.ContractNumber.ToString(CultureInfo.InvariantCulture) 
+                         : "0"
+    };
+
+    return await Task.FromResult(Result.Success<EligibileUser>(user)).ConfigureAwait(false);
+}
