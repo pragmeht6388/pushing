@@ -9,6 +9,7 @@
          return CarPolicy;
      }
 
+Change this code to not log user-controlled data.
 
 
 Use model binding instead of accessing the raw request data
