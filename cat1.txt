@@ -1,29 +1,4 @@
-     [HttpGet("GetCarPolicies/{customerNumber}")]
-     [AllowAnonymous]
-     public dynamic GetCarPolicies(string customerNumber)
-     {
-         var jwtToken = Request.Headers["Authorization"];
-         _logger.Debug("GetCarPolicies requested", customerNumber);
-         var CarPolicy = CarpolicyService.GetCarPolicies(customerNumber, 20, jwtToken);
-         _logger.Debug("GetCarPolicies processed.");
-         return CarPolicy;
-     }
+  _logger.Debug($"new QuoteId=>{quoteId},qtiNumber=>{qtiNumber}");
+
 
 Change this code to not log user-controlled data.
-
-
-Use model binding instead of accessing the raw request data
-
-[HttpGet("GetCarPolicies/{customerNumber}")]
-[AllowAnonymous]
-public IActionResult GetCarPolicies(
-    [FromRoute] string customerNumber,
-    [FromHeader(Name = "Authorization")] string jwtToken)
-{
-    _logger.Debug("GetCarPolicies requested", customerNumber);
-    
-    var carPolicy = CarpolicyService.GetCarPolicies(customerNumber, 20, jwtToken);
-
-    _logger.Debug("GetCarPolicies processed.");
-    return Ok(carPolicy);
-}
