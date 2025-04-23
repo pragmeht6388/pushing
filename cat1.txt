@@ -7,3 +7,12 @@ Use model binding instead of accessing the raw request data
         return QuotationService.GetCashFlowSavings(quoteId, jwtToken, 20);
 
     }
+
+
+[HttpGet("GetCashFlowSavings/{quoteId}")]
+public Task<dynamic> GetCashFlowSavings(
+    int quoteId,
+    [FromHeader(Name = "Authorization")] string jwtToken)
+{
+    return QuotationService.GetCashFlowSavings(quoteId, jwtToken, 20);
+}
