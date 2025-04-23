@@ -8,3 +8,7 @@
          _logger.Debug("GetCarPolicies processed.");
          return CarPolicy;
      }
+
+
+
+Use model binding instead of accessing the raw request data
