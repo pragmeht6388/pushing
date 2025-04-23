@@ -1,3 +1,7 @@
  _logger.Debug($"Gear type ids=>{string.Join(",", gearTypeIds)}, Country Id=>{countryId}");
 
 Change this code to not log user-controlled data.
+
+_logger.Debug("Fetching gear type data. GearTypeIds count: {GearTypeIdCount}, CountryId is set: {HasCountryId}",
+    gearTypeIds?.Count ?? 0,
+    countryId != null);
