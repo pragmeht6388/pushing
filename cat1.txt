@@ -7,3 +7,9 @@
 The logging message template should not vary between calls to 'LoggerExtensions.LogInformation(ILogger, string?, params object?[])' (external_roslyn:CA2254)
 
 See it in SonarQube 
+
+if (response.IsSuccess && response.Value.Any(x => x.MessageId != null))
+{
+    var result = await notificationService.UpdateNotificationSentStaus(notification.Id).ConfigureAwait(false);
+    _logger.LogInformation("Notification status update result: {Result}", result);
+}
