@@ -22,3 +22,33 @@
  }
 
 Use at least 100,000 iterations and a state-of-the-art digest algorithm here.
+
+
+using System.Security.Cryptography;
+
+public static KeyandInitializationVector GetKeyandIV(bool IsExistingKey, string password, byte[] saltBytes = null)
+{
+    if (!IsExistingKey)
+    {
+        saltBytes = new byte[16];
+
+        using (var rng = RandomNumberGenerator.Create())
+        {
+            rng.GetBytes(saltBytes);
+        }
+    }
+
+    // Use at least 100,000 iterations and SHA-256 hash algorithm
+    const int iterations = 100_000;
+    using var encryptionKey = new Rfc2898DeriveBytes(password, saltBytes, iterations, HashAlgorithmName.SHA256);
+
+    byte[] key = encryptionKey.GetBytes(32); // 256-bit key
+    byte[] iv = encryptionKey.GetBytes(16);  // 128-bit IV
+
+    return new KeyandInitializationVector
+    {
+        Key = key,
+        InitializationVector = iv,
+        Salt = saltBytes // You should return the salt so it can be reused for decryption
+    };
+}
