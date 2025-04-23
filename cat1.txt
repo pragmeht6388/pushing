@@ -12,3 +12,17 @@
 
 
 Use model binding instead of accessing the raw request data
+
+[HttpGet("GetCarPolicies/{customerNumber}")]
+[AllowAnonymous]
+public IActionResult GetCarPolicies(
+    [FromRoute] string customerNumber,
+    [FromHeader(Name = "Authorization")] string jwtToken)
+{
+    _logger.Debug("GetCarPolicies requested", customerNumber);
+    
+    var carPolicy = CarpolicyService.GetCarPolicies(customerNumber, 20, jwtToken);
+
+    _logger.Debug("GetCarPolicies processed.");
+    return Ok(carPolicy);
+}
