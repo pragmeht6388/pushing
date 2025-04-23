@@ -1,7 +1,5 @@
-   _logger.Debug($"activeQuotations.Count=>{activeQuotations.Count()}");//pragnesh
+  "ConnectionStrings": {
+    "Default": "server=IAQE2K14\\IS_ALDQUOTE_INT;Initial Catalog=AldQuote;user id=appaqe;Password=tN1pjKv4;"
+  },
 
-
-Change this code to not log user-controlled data.
-
-_logger.Debug("Number of active quotations: {ActiveQuotationCount}", activeQuotations?.Count() ?? 0);
-
+Make sure this database password gets changed and removed from the code.
