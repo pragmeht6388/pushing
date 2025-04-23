@@ -1,10 +1,4 @@
-   if (Url.IsLocalUrl(model!.ReturnUrl) && allowedUrls.Contains(model!.ReturnUrl))
+   if (Url.IsLocalUrl(model!.ReturnUrl.ToString()) && allowedUrls.Contains(model!.ReturnUrl.ToString()))
    {
-       return Redirect(model!.ReturnUrl);
+       return Redirect(model!.ReturnUrl.ToString());
    }
-
-var returnUrl = model!.ReturnUrl.ToString(); // OR use model!.ReturnUrl.AbsolutePath if it's a Uri
-if (Url.IsLocalUrl(returnUrl) && allowedUrls.Contains(returnUrl))
-{
-    return Redirect(returnUrl);
-}
