@@ -7,3 +7,16 @@ if (response.IsSuccess && response.Value.Any(x => x.MessageId != null))
 }
 
 CA1848: Use the LoggerMessage delegates
+
+
+private static readonly Action<ILogger, string, Exception?> _logNotificationStatusUpdateResult =
+    LoggerMessage.Define<string>(
+        LogLevel.Information,
+        new EventId(1001, nameof(LogNotificationStatusUpdateResult)),
+        "Notification status update result: {Result}");
+
+private static void LogNotificationStatusUpdateResult(ILogger logger, string result) =>
+    _logNotificationStatusUpdateResult(logger, result, null);
+
+
+LogNotificationStatusUpdateResult(_logger, result);
