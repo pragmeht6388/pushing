@@ -2,3 +2,9 @@
    {
        return Redirect(model!.ReturnUrl);
    }
+
+var returnUrl = model!.ReturnUrl.ToString(); // OR use model!.ReturnUrl.AbsolutePath if it's a Uri
+if (Url.IsLocalUrl(returnUrl) && allowedUrls.Contains(returnUrl))
+{
+    return Redirect(returnUrl);
+}
