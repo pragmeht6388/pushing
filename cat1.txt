@@ -2,3 +2,16 @@
    {
        return Redirect(model!.ReturnUrl.ToString());
    }
+
+
+if (model != null)
+{
+    var returnUrl = model.ReturnUrl?.ToString();
+
+    if (!string.IsNullOrEmpty(returnUrl) && 
+        Url.IsLocalUrl(returnUrl) && 
+        allowedUrls.Contains(returnUrl))
+    {
+        return Redirect(returnUrl);
+    }
+}
