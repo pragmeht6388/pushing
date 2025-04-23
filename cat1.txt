@@ -1,18 +1,24 @@
-Use model binding instead of accessing the raw request data
+ public static KeyandInitializationVector GetKeyandIV(bool IsExistingKey, string password, byte[] saltBytes = null)
+ {
+     if (!IsExistingKey)
+     {
+         saltBytes = new byte[16];
 
-    [HttpGet("GetCashFlowSavings/{quoteId}")]
-    public Task<dynamic> GetCashFlowSavings(int quoteId)
-    {
-        var jwtToken = Request.Headers["Authorization"];
-        return QuotationService.GetCashFlowSavings(quoteId, jwtToken, 20);
+         using (var rng = RandomNumberGenerator.Create())
+         {
+             rng.GetBytes(saltBytes);
+         }
+     }
 
-    }
+     Rfc2898DeriveBytes encryptionKey = new Rfc2898DeriveBytes(password, saltBytes, 10);
+     byte[] key = encryptionKey.GetBytes(32);
+     byte[] iv = encryptionKey.GetBytes(16);
 
+     return new KeyandInitializationVector
+     {
+         Key = key,
+         InitializationVector = iv
+     };
+ }
 
-[HttpGet("GetCashFlowSavings/{quoteId}")]
-public Task<dynamic> GetCashFlowSavings(
-    int quoteId,
-    [FromHeader(Name = "Authorization")] string jwtToken)
-{
-    return QuotationService.GetCashFlowSavings(quoteId, jwtToken, 20);
-}
+Use at least 100,000 iterations and a state-of-the-art digest algorithm here.
