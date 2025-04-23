@@ -2,3 +2,5 @@
 
 
 Change this code to not log user-controlled data.
+
+_logger.Debug("Created new quote. Quote processing complete."); 
