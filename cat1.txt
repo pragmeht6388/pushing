@@ -3,3 +3,5 @@
 
 Change this code to not log user-controlled data.
 
+_logger.Debug("Number of active quotations: {ActiveQuotationCount}", activeQuotations?.Count() ?? 0);
+
