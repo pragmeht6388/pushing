@@ -1,17 +1,9 @@
-   if (Url.IsLocalUrl(model!.ReturnUrl.ToString()) && allowedUrls.Contains(model!.ReturnUrl.ToString()))
-   {
-       return Redirect(model!.ReturnUrl.ToString());
-   }
+       if (response.IsSuccess && response.Value.Any(x => x.MessageId != null))
+       {
+           var result = await notificationService.UpdateNotificationSentStaus(notification.Id).ConfigureAwait(false);
+           _logger.LogInformation(result.ToString());
+       }
 
+The logging message template should not vary between calls to 'LoggerExtensions.LogInformation(ILogger, string?, params object?[])' (external_roslyn:CA2254)
 
-if (model != null)
-{
-    var returnUrl = model.ReturnUrl?.ToString();
-
-    if (!string.IsNullOrEmpty(returnUrl) && 
-        Url.IsLocalUrl(returnUrl) && 
-        allowedUrls.Contains(returnUrl))
-    {
-        return Redirect(returnUrl);
-    }
-}
+See it in SonarQube 
