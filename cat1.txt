@@ -1,1 +1,10 @@
-,,
+     [HttpGet("GetCarPolicies/{customerNumber}")]
+     [AllowAnonymous]
+     public dynamic GetCarPolicies(string customerNumber)
+     {
+         var jwtToken = Request.Headers["Authorization"];
+         _logger.Debug("GetCarPolicies requested", customerNumber);
+         var CarPolicy = CarpolicyService.GetCarPolicies(customerNumber, 20, jwtToken);
+         _logger.Debug("GetCarPolicies processed.");
+         return CarPolicy;
+     }
