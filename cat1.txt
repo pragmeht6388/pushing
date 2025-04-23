@@ -1,6 +1,9 @@
-  _logger.Debug($"new QuoteId=>{quoteId},qtiNumber=>{qtiNumber}");
+Use model binding instead of accessing the raw request data
 
+    [HttpGet("GetCashFlowSavings/{quoteId}")]
+    public Task<dynamic> GetCashFlowSavings(int quoteId)
+    {
+        var jwtToken = Request.Headers["Authorization"];
+        return QuotationService.GetCashFlowSavings(quoteId, jwtToken, 20);
 
-Change this code to not log user-controlled data.
-
-_logger.Debug("Created new quote. Quote processing complete."); 
+    }
