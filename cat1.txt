@@ -1,8 +1,9 @@
-     catch (Exception ex)
-     {
-         var contextMessage = $"Unexpected exception in UserInformation. UserId: {userId}";
-         _log.Error(ex, contextMessage);
-         throw; // if logging is enough and rethrow keeps the trace
-     }
+    catch (Exception ex)
+    {
+        var contextMessage = $"Unexpected exception in UserInformation. UserId: {userId}";
+        _log.Error(ex, contextMessage);
+        throw new Exception(contextMessage, ex);
+    }
 
-Either log this exception and handle it, or rethrow it with some contextual information. (csharpsquid:S2139 )
+'System.Exception' should not be thrown by user code. (csharpsquid:S112 )
+Exception type System.Exception is not sufficiently specific (external_roslyn:CA2201)
