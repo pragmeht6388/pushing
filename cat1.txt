@@ -58,3 +58,6 @@ export class DynamicInputComponent {
 </form>
 
 <button (click)="addInput()">Add Input</button>
+
+
+[ERROR] NG8002: Can't bind to 'formControlName' since it isn't a known property of 'input'. [plugin angular-compiler]
