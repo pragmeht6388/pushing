@@ -1,79 +1,85 @@
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, FormControl } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormGroup, FormControl, FormArray, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-dynamic-input',
-  templateUrl: './dynamic-input.component.html'
+  standalone: true,
+  templateUrl: './dynamic-input.component.html',
+  styleUrls: ['./dynamic-input.component.css'],
+  imports: [] // No module imports here as this is a standalone component
 })
-export class DynamicInputComponent {
-  form: FormGroup;
-  editingIndex: number | null = null; // Track which one is being edited
+export class DynamicInputComponent implements OnInit {
+  dynamicForm: FormGroup;
 
-  constructor(private fb: FormBuilder) {
-    this.form = this.fb.group({
-      inputs: this.fb.array([])
+  constructor() {}
+
+  ngOnInit() {
+    // Initialize the form with an empty FormArray
+    this.dynamicForm = new FormGroup({
+      inputs: new FormArray([])
     });
   }
 
-  get inputs(): FormArray {
-    return this.form.get('inputs') as FormArray;
+  // Getter for the inputs array
+  get inputs() {
+    return (this.dynamicForm.get('inputs') as FormArray);
   }
 
+  // Add a new input control to the form
   addInput() {
-    this.inputs.push(new FormControl(''));
+    const inputControl = new FormGroup({
+      value: new FormControl('', Validators.required), // Adding a 'required' validator to the input value
+      editing: new FormControl(false)  // Flag to track if the input is being edited
+    });
+    this.inputs.push(inputControl);  // Add to the form array
   }
 
-  startEdit(index: number) {
-    this.editingIndex = index;
+  // Start editing an input control
+  editInput(index: number) {
+    const input = this.inputs.at(index) as FormGroup;
+    input.get('editing')?.setValue(true);  // Set the editing flag to true
   }
 
-  stopEdit() {
-    this.editingIndex = null;
+  // Stop editing and save the updated value
+  updateInput(index: number) {
+    const input = this.inputs.at(index) as FormGroup;
+    input.get('editing')?.setValue(false);  // Set the editing flag to false
   }
 
-  getEditingValue(): string {
-    if (this.editingIndex !== null) {
-      return this.inputs.at(this.editingIndex)?.value;
-    }
-    return '';
+  // Capture changes in the input field
+  onInputChange(event: any, index: number) {
+    const input = this.inputs.at(index) as FormGroup;
+    input.get('value')?.setValue(event.target.value);  // Update the form control value
   }
 }
 
 
 
-<form [formGroup]="form">
-  <div formArrayName="inputs">
-    <div *ngFor="let control of inputs.controls; let i = index">
-      <div [formGroupName]="i">
-        <input
-          [formControlName]="null"
-          (focus)="startEdit(i)"
-          (blur)="stopEdit()"
-          [readonly]="editingIndex !== i"
-        />
-        <span *ngIf="editingIndex === i">Currently editing: {{ getEditingValue() }}</span>
+
+
+<div>
+  <h2>Dynamic Input Controls with Reactive Forms (Standalone)</h2>
+
+  <!-- Button to add new input field -->
+  <button (click)="addInput()">Add Input</button>
+
+  <form [formGroup]="dynamicForm">
+    <div formArrayName="inputs">
+      <div *ngFor="let input of inputs.controls; let i = index" [formGroupName]="i">
+        <div *ngIf="input.get('editing')?.value">
+          <!-- Input field for editing -->
+          <input
+            formControlName="value"
+            (input)="onInputChange($event, i)"
+          />
+          <button (click)="updateInput(i)">Update</button>
+        </div>
+        <div *ngIf="!input.get('editing')?.value">
+          <!-- Display input value -->
+          <span>{{ input.get('value')?.value || 'Empty' }}</span>
+          <button (click)="editInput(i)">Edit</button>
+        </div>
       </div>
     </div>
-  </div>
-</form>
-
-<button (click)="addInput()">Add Input</button>
-
-
-[ERROR] NG8002: Can't bind to 'formControlName' since it isn't a known property of 'input'. [plugin angular-compiler]
-
-
-<form [formGroup]="form">
-  <div formArrayName="inputs">
-    <div *ngFor="let control of inputs.controls; let i = index">
-      <input
-        [formControlName]="i"
-        (focus)="startEdit(i)"
-        (blur)="stopEdit()"
-        [readonly]="editingIndex !== i"
-      />
-      <span *ngIf="editingIndex === i">Currently editing: {{ getEditingValue() }}</span>
-    </div>
-  </div>
-</form>
-
+  </form>
+</div>
