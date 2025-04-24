@@ -83,3 +83,125 @@ public DataTransferObject.User UserInformation(int userId,[FromHeader(Name = "Au
 
 
 Refactor this method to reduce its Cognitive Complexity from 20 to the 15 allowed. (csharpsquid:S3776 )
+
+
+
+[HttpGet("UserInformation/{userId}")]
+public DataTransferObject.User UserInformation(int userId, [FromHeader(Name = "Authorization")] string jwtToken)
+{
+    _log.Info("UserInformation method called.");
+    var phone = HttpContext.User.FindFirstValue("phone_number");
+    var adfsIssuer = Utilities.GetAppConfig<string>(Constants.AdfsIssuer);
+    var openiddictIssuer = Utilities.GetAppConfig<string>(Consts.MY_OPENIDDICT_ISS);
+
+    DataTransferObject.User userInformation = null;
+
+    try
+    {
+        dynamic user = Helper.GetUserFromClaims(User.Identity).ToDynamic();
+        var role = ((string)user.Role).ToUpperInvariant();
+
+        if (user.issuer == adfsIssuer)
+        {
+            userInformation = HandleAdfsUser(user, role);
+        }
+        else if (user.issuer == openiddictIssuer)
+        {
+            userInformation = HandleOpenIddictUser(user, phone, role, jwtToken);
+        }
+    }
+    catch (Exception ex)
+    {
+        HandleException(userId, ex, out userInformation);
+    }
+
+    _log.Info("UserInformation method call completed.");
+    return userInformation;
+}
+
+
+
+private DataTransferObject.User HandleAdfsUser(dynamic user, string role)
+{
+    UserService.UpdateUserInfoFromMyAld(user);
+    var userInfo = UserService.GetUser((string)user.EmailId, (string)user.Country);
+    if (userInfo != null)
+    {
+        userInfo.Role = role;
+    }
+    _log.Info("No Exception caught in UserInformation method");
+    return userInfo;
+}
+
+private DataTransferObject.User HandleOpenIddictUser(dynamic user, string phone, string role, string jwtToken)
+{
+    var userInfo = UserService.GetUser(user.EmailId, user.Country);
+    if (userInfo != null)
+    {
+        userInfo.MobileNumber = phone;
+        UserService.UpdateUser(userInfo);
+    }
+
+    if (userInfo == null && !string.IsNullOrEmpty(user.Client?.Value))
+    {
+        userInfo = TryCreateFirstTimeUser(user, phone, jwtToken);
+    }
+
+    if (userInfo != null)
+    {
+        userInfo.Role = role;
+    }
+
+    _log.Info("No Exception caught in ALDFirstUserInformation method");
+    return userInfo;
+}
+
+private DataTransferObject.User TryCreateFirstTimeUser(dynamic user, string phone, string jwtToken)
+{
+    var userDto = new UserDTO
+    {
+        UserId = 0,
+        FirstName = (string)user.EmailId,
+        LastName = string.Empty,
+        UserName = (string)user.EmailId,
+        Password = string.Empty,
+        Email = (string)user.EmailId,
+        TelephoneNo = phone,
+        CustomerNumber = Convert.ToInt32(user.Client.Value)
+    };
+
+    var paddedCustomerNumber = userDto.CustomerNumber.ToString().PadLeft(6, '0');
+    var carPolicyId = UserService.GetDefaultCarpolicyId(paddedCustomerNumber, 20, jwtToken);
+    if (carPolicyId.Result <= 0) return null;
+
+    var userId = UserService.CreateALDFirstUser(userDto);
+    if (userId <= 0) return null;
+
+    UserService.SaveUserCarPolicyDefault(userId, carPolicyId.Result);
+    var userInfo = UserService.GetUser((string)user.EmailId, (string)user.Country);
+    if (userInfo != null)
+    {
+        userInfo.MobileNumber = phone;
+        UserService.UpdateUser(userInfo);
+    }
+    return userInfo;
+}
+
+private void HandleException(int userId, Exception ex, out DataTransferObject.User userInfo)
+{
+    var environment = Utilities.GetAppConfig<string>(Constants.Environment);
+    if (environment == Constants.DEVELOPMENT)
+    {
+        userInfo = UserService.GetUser(userId, 20);
+    }
+    else
+    {
+        _log.Debug(ex, "Exception in UserInformation");
+        userInfo = null;
+    }
+}
+
+
+
+
+
