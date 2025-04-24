@@ -1,5 +1,8 @@
-  "ConnectionStrings": {
-    "Default": "server=IAQE2K14\\IS_ALDQUOTE_INT;Initial Catalog=AldQuote;user id=appaqe;Password=tN1pjKv4;"
-  },
+    try
+    {
+        this.UpdateTempStatus(newQtiNum, originalQtiState);
+        quoteQti.QTI_STATE = originalQtiState;
+        log.Info($"After UpdateTempStatus method call.  originalQtiState, tempQtiState Generated");
+    }
 
-Make sure this database password gets changed and removed from the code.
+Change this code to not log user-controlled data.
