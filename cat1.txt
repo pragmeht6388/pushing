@@ -1,9 +1,3 @@
-    try
-    {
-        this.UpdateTempStatus(newQtiNum, originalQtiState);
-        quoteQti.QTI_STATE = originalQtiState;
-        log.Info($"After UpdateTempStatus method call.  originalQtiState, tempQtiState Generated");
-   log.Info("Temp status updated successfully after method call.");
-    }
+ _logger.Debug("Number of active quotations: {ActiveQuotationCount}", activeQuotations?.Count() ?? 0);
 
-Change this code to not log user-controlled data.
+The behavior of 'Logger.Debug(string, int)' could vary based on the current user's locale settings. Replace this call in 'VehicleService.GetSavedVehicleInformationList(SearchFilter, int)' with a call to 'Logger.Debug(IFormatProvider, string, int)'. (external_roslyn:CA1305)
