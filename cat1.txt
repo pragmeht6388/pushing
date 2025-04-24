@@ -1,1 +1,7 @@
-..
+catch (Exception ex)
+            {
+                _log.Error(ex, $"Unexpected exception in UserInformation. UserId: {userId}");
+                throw; // Rethrows original exception with full stack trace
+
+
+Either log this exception and handle it, or rethrow it with some contextual information. (csharpsquid:S2139 )
