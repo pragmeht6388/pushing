@@ -1,1 +1,60 @@
-..
+import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, FormArray, FormControl } from '@angular/forms';
+
+@Component({
+  selector: 'app-dynamic-input',
+  templateUrl: './dynamic-input.component.html'
+})
+export class DynamicInputComponent {
+  form: FormGroup;
+  editingIndex: number | null = null; // Track which one is being edited
+
+  constructor(private fb: FormBuilder) {
+    this.form = this.fb.group({
+      inputs: this.fb.array([])
+    });
+  }
+
+  get inputs(): FormArray {
+    return this.form.get('inputs') as FormArray;
+  }
+
+  addInput() {
+    this.inputs.push(new FormControl(''));
+  }
+
+  startEdit(index: number) {
+    this.editingIndex = index;
+  }
+
+  stopEdit() {
+    this.editingIndex = null;
+  }
+
+  getEditingValue(): string {
+    if (this.editingIndex !== null) {
+      return this.inputs.at(this.editingIndex)?.value;
+    }
+    return '';
+  }
+}
+
+
+
+<form [formGroup]="form">
+  <div formArrayName="inputs">
+    <div *ngFor="let control of inputs.controls; let i = index">
+      <div [formGroupName]="i">
+        <input
+          [formControlName]="null"
+          (focus)="startEdit(i)"
+          (blur)="stopEdit()"
+          [readonly]="editingIndex !== i"
+        />
+        <span *ngIf="editingIndex === i">Currently editing: {{ getEditingValue() }}</span>
+      </div>
+    </div>
+  </div>
+</form>
+
+<button (click)="addInput()">Add Input</button>
