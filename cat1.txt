@@ -5,3 +5,9 @@ catch (Exception ex)
 
 
 Either log this exception and handle it, or rethrow it with some contextual information. (csharpsquid:S2139 )
+
+
+catch (Exception ex)
+{
+    throw new Exception($"Unexpected exception in UserInformation. UserId: {userId}", ex);
+}
