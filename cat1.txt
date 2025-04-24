@@ -1,3 +1,7 @@
  _logger.Debug("Number of active quotations: {ActiveQuotationCount}", activeQuotations?.Count() ?? 0);
 
 The behavior of 'Logger.Debug(string, int)' could vary based on the current user's locale settings. Replace this call in 'VehicleService.GetSavedVehicleInformationList(SearchFilter, int)' with a call to 'Logger.Debug(IFormatProvider, string, int)'. (external_roslyn:CA1305)
+
+_logger.Debug(CultureInfo.InvariantCulture, 
+    "Number of active quotations: {0}", 
+    activeQuotations?.Count() ?? 0);
