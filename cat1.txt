@@ -7,3 +7,11 @@
 
 'System.Exception' should not be thrown by user code. (csharpsquid:S112 )
 Exception type System.Exception is not sufficiently specific (external_roslyn:CA2201)
+
+
+catch (Exception ex)
+{
+    var contextMessage = $"Unexpected exception in UserInformation. UserId: {userId}";
+    _log.Error(ex, contextMessage);
+    throw new InvalidOperationException(contextMessage, ex);
+}
