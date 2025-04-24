@@ -3,6 +3,7 @@
         this.UpdateTempStatus(newQtiNum, originalQtiState);
         quoteQti.QTI_STATE = originalQtiState;
         log.Info($"After UpdateTempStatus method call.  originalQtiState, tempQtiState Generated");
+   log.Info("Temp status updated successfully after method call.");
     }
 
 Change this code to not log user-controlled data.
