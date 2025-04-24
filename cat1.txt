@@ -61,3 +61,19 @@ export class DynamicInputComponent {
 
 
 [ERROR] NG8002: Can't bind to 'formControlName' since it isn't a known property of 'input'. [plugin angular-compiler]
+
+
+<form [formGroup]="form">
+  <div formArrayName="inputs">
+    <div *ngFor="let control of inputs.controls; let i = index">
+      <input
+        [formControlName]="i"
+        (focus)="startEdit(i)"
+        (blur)="stopEdit()"
+        [readonly]="editingIndex !== i"
+      />
+      <span *ngIf="editingIndex === i">Currently editing: {{ getEditingValue() }}</span>
+    </div>
+  </div>
+</form>
+
