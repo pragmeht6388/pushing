@@ -258,3 +258,19 @@ namespace ALDQuote.Carpolicy.Consumer
 }
 
 Add a way to break out of this method's recursion.
+
+using System.Threading.Tasks;
+
+namespace ALDQuote.Carpolicy.Consumer
+{
+    internal class Program
+    {
+        private static void Main(string[] args)
+        {
+            RabbitMQConsumer client = new RabbitMQConsumer();
+            RabbitMQConsumer.CreateConnection();
+            client.ProcessMessages();
+        }
+    }
+}
+
