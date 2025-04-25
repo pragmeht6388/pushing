@@ -1,1 +1,7 @@
-..
+ <div style="width: 60%; padding: 4px;font-family: Arial; font-size: 10pt;">
+
+Unexpected missing generic font family
+
+
+   <table class="emailTemp" cellpadding="3" style="font-family: Arial; font-size: 10pt;
+       table-layout: fixed; width: 800px;">
