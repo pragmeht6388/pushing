@@ -1,5 +1,7 @@
  <div style="width: 60%; padding: 4px;font-family: Arial; font-size: 10pt;">
 
+<div style="width: 60%; padding: 4px; font-family: Arial, sans-serif; font-size: 10pt;">
+
 Unexpected missing generic font family
 
 
