@@ -1,265 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl, FormArray, Validators } from '@angular/forms';
-
-@Component({
-  selector: 'app-dynamic-input',
-  standalone: true,
-  templateUrl: './dynamic-input.component.html',
-  styleUrls: ['./dynamic-input.component.css'],
-  imports: [] // No module imports here as this is a standalone component
-})
-export class DynamicInputComponent implements OnInit {
-  dynamicForm: FormGroup;
-
-  constructor() {}
-
-  ngOnInit() {
-    // Initialize the form with an empty FormArray
-    this.dynamicForm = new FormGroup({
-      inputs: new FormArray([])
-    });
-  }
-
-  // Getter for the inputs array
-  get inputs() {
-    return (this.dynamicForm.get('inputs') as FormArray);
-  }
-
-  // Add a new input control to the form
-  addInput() {
-    const inputControl = new FormGroup({
-      value: new FormControl('', Validators.required), // Adding a 'required' validator to the input value
-      editing: new FormControl(false)  // Flag to track if the input is being edited
-    });
-    this.inputs.push(inputControl);  // Add to the form array
-  }
-
-  // Start editing an input control
-  editInput(index: number) {
-    const input = this.inputs.at(index) as FormGroup;
-    input.get('editing')?.setValue(true);  // Set the editing flag to true
-  }
-
-  // Stop editing and save the updated value
-  updateInput(index: number) {
-    const input = this.inputs.at(index) as FormGroup;
-    input.get('editing')?.setValue(false);  // Set the editing flag to false
-  }
-
-  // Capture changes in the input field
-  onInputChange(event: any, index: number) {
-    const input = this.inputs.at(index) as FormGroup;
-    input.get('value')?.setValue(event.target.value);  // Update the form control value
-  }
-}
-
-
-
-
-
-<div>
-  <h2>Dynamic Input Controls with Reactive Forms (Standalone)</h2>
-
-  <!-- Button to add new input field -->
-  <button (click)="addInput()">Add Input</button>
-
-  <form [formGroup]="dynamicForm">
-    <div formArrayName="inputs">
-      <div *ngFor="let input of inputs.controls; let i = index" [formGroupName]="i">
-        <div *ngIf="input.get('editing')?.value">
-          <!-- Input field for editing -->
-          <input
-            formControlName="value"
-            (input)="onInputChange($event, i)"
-          />
-          <button (click)="updateInput(i)">Update</button>
-        </div>
-        <div *ngIf="!input.get('editing')?.value">
-          <!-- Display input value -->
-          <span>{{ input.get('value')?.value || 'Empty' }}</span>
-          <button (click)="editInput(i)">Edit</button>
-        </div>
-      </div>
-    </div>
-  </form>
-</div>
-
-
-using ALDQuote.ServiceBus;
-using ALDQuote.Shared;
-using Newtonsoft.Json;
-using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
 using System;
-using System.Net;
-using System.Text;
-
-namespace ALDQuote.Carpolicy.Consumer
-{
-    public class RabbitMQConsumer
-    {
-        private static IConnection _connection;
-        private static IModel _channel;
-        private static EventingBasicConsumer _consumer;
-        private static QueueingBasicConsumer _consumer2;
-        public void ProcessMessages()
-        {
-            while (true)
-            {
-                GetMessageFromQueue();
-            }
-        }
-
-        private void GetMessageFromQueue()
-        {
-            object response2 = null;
-            var ea2 = _consumer2.Queue.Dequeue();
-            var props2 = ea2.BasicProperties;
-            var replyProps2 = _channel.CreateBasicProperties();
-            replyProps2.CorrelationId = props2.CorrelationId;
-            string function = "NotAssigned";
-            try
-            {
-                var message = ea2.Body.DeSerialize<dynamic>();
-                function = message.Function;
-                if (message.Function == "City")
-                {
-                    response2 = GetCity((string)message.CityCode, (string)message.JwtToken);
-                }
-                else if(message.Function == "CityById")
-                {
-                    response2 = GetCityById((int)message.CityId, (string)message.JwtToken);
-                }
-                else
-                {
-                    response2 = GetCarpolicy((int)message.CarPolicyId, (string)message.JwtToken);
-                }
-                Console.WriteLine($"Correlation ID = {props2.CorrelationId}, Function= {function}");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($" ERROR : {ex.Message}, Function= {function}");
-                response2 = null;
-            }
-            finally
-            {
-                if (response2 != null)
-                {
-                    var responseBytes = response2.Serialize();
-                    _channel.BasicPublish("", props2.ReplyTo, replyProps2, responseBytes);
-                }
-                _channel.BasicAck(ea2.DeliveryTag, false);
-            }
-            if (_consumer != null)
-            {
-                _consumer.Received += (model, ea) =>
-                {
-                    Domain.CarPolicy response = null;
-
-                    var props = ea.BasicProperties;
-                    var replyProps = _channel.CreateBasicProperties();
-                    replyProps.CorrelationId = props.CorrelationId;
-
-                    try
-                    {
-                        response = GetCarpolicyNew(ea);
-                        Console.WriteLine("Correlation ID = {0}", props.CorrelationId);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(" [.] " + e.Message);
-                        response = null;
-                    }
-                    finally
-                    {
-                        var responseBytes = response.Serialize();
-                        _channel.BasicPublish("", props.ReplyTo, replyProps, responseBytes);
-                        _channel.BasicAck(ea.DeliveryTag, false);
-                    }
-                };
-            }
-
-            Console.WriteLine("----------------------------------------------------------");
-            Console.WriteLine("");
-        }
-
-        private Domain.CarPolicy GetCarpolicyNew(BasicDeliverEventArgs ea)
-        {
-            var carpolicyId = ea.Body.DeSerialize<int>();
-            Domain.CarPolicy carpolicy;
-            using (var client = new WebClient())
-            {
-                client.UseDefaultCredentials = true;
-
-                string url = Utilities.GetAppConfig<string>(Constants.GetCarpolicyUrl);
-
-                var json = JsonConvert.SerializeObject(carpolicyId);
-
-                var s = client.UploadData(url, "GET", Encoding.Default.GetBytes(json));
-                carpolicy = s.DeSerialize<Domain.CarPolicy>();
-                Console.WriteLine("Payment -  {0} ", carpolicy.CountryId);
-            }
-
-            return carpolicy;
-        }
-        private dynamic GetCity(string cityCode, string jwtToken)
-        {
-            var serverDomainUrl = Utilities.GetAppConfig<string>(Constants.ServerDomainUrl);
-            var getCityUrl = Utilities.GetAppConfig<string>(Constants.GetCityUrl);
-            var headerCollection = new WebHeaderCollection { { "Authorization", jwtToken } };
-            var city = WebRequestClient.GetFromApiWebRequest<dynamic>(serverDomainUrl + getCityUrl + cityCode, headerCollection);
-            return city;
-        }
-        private dynamic GetCityById(int cityId, string jwtToken)
-        {
-            var serverDomainUrl = Utilities.GetAppConfig<string>(Constants.ServerDomainUrl);
-            var getCityUrl = Utilities.GetAppConfig<string>(Constants.GetCityByIdUrl);
-            var headerCollection = new WebHeaderCollection { { "Authorization", jwtToken } };
-            var city = WebRequestClient.GetFromApiWebRequest<dynamic>(serverDomainUrl + getCityUrl + cityId, headerCollection);
-            return city;
-        }
-        private Domain.CarPolicy GetCarpolicy(int carpolicyId, string jwtToken)
-        {
-            var serverDomainUrl = Utilities.GetAppConfig<string>(Constants.ServerDomainUrl);
-            var GetCarpolicyUrl = Utilities.GetAppConfig<string>(Constants.GetCarpolicyUrl);
-            var headerCollection = new WebHeaderCollection { { "Authorization", jwtToken } };
-            Domain.CarPolicy carpolicy = WebRequestClient.GetFromApi<Domain.CarPolicy>(serverDomainUrl + GetCarpolicyUrl + carpolicyId, headerCollection);
-
-            return carpolicy;
-        }
-
-        public static void CreateConnection()
-        {
-            RabbitMq.Instance.SetClientProvidedName(Utilities.GetAppConfig<string>(Constants.ClientProvidedName));
-            _connection = RabbitMq.Instance.Connection;
-            _channel = _connection.CreateModel();
-            _channel.QueueDeclare(Constants.CarpolicyQueue, false, false, false, null);
-            _channel.BasicQos(0, 1, false);
-            bool useNew = false;
-            if (useNew)
-            {
-                _consumer = new EventingBasicConsumer(_channel);
-                _channel.BasicConsume(Constants.CarpolicyQueue, false, _consumer);
-                Console.WriteLine(" [x] Awaiting carpolicy RPC requests");
-            }
-            else
-            {
-                _consumer2 = new QueueingBasicConsumer(_channel);
-                _channel.BasicConsume(Constants.CarpolicyQueue, false, _consumer2);
-                Console.WriteLine(" [x] Awaiting carpolicy RPC requests2");
-            }
-        }
-
-        public void Close()
-        {
-            _connection.Close();
-        }
-    }
-}
-
-Add a way to break out of this method's recursion.
-
-using System.Threading.Tasks;
+using System.Threading;
 
 namespace ALDQuote.Carpolicy.Consumer
 {
@@ -267,10 +7,29 @@ namespace ALDQuote.Carpolicy.Consumer
     {
         private static void Main(string[] args)
         {
+            var cancellationTokenSource = new CancellationTokenSource();
+            Console.CancelKeyPress += (sender, e) =>
+            {
+                e.Cancel = true;
+                cancellationTokenSource.Cancel();
+                Console.WriteLine("Cancellation requested. Shutting down...");
+            };
+
             RabbitMQConsumer client = new RabbitMQConsumer();
             RabbitMQConsumer.CreateConnection();
-            client.ProcessMessages();
+            client.ProcessMessages(cancellationTokenSource.Token);
+            client.Close();
         }
     }
 }
 
+
+
+public void ProcessMessages(CancellationToken cancellationToken)
+{
+    while (!cancellationToken.IsCancellationRequested)
+    {
+        GetMessageFromQueue();
+    }
+    Console.WriteLine("Message processing has been gracefully stopped.");
+}
