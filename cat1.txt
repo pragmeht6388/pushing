@@ -6,3 +6,16 @@
 'customer.FirstOrDefault(i => i.CustomerNumber == customerNumber).CarPolicies.FirstOrDefault(c => c.IsDefault)' is null on at least one execution path.
 'customer.FirstOrDefault(i => i.CustomerNumber == customerNumber)' is null on at least one execution path.
 
+
+public int? GetDefaultCarPolicyForCustomer(string customerNumber, int countryId)
+{
+    var customers = GetAllCustomers(countryId);
+    var customer = customers.FirstOrDefault(i => i.CustomerNumber == customerNumber);
+
+    if (customer == null || customer.CarPolicies == null)
+        return null;
+
+    var defaultPolicy = customer.CarPolicies.FirstOrDefault(c => c.IsDefault);
+
+    return defaultPolicy?.CarPolicyId;
+}
