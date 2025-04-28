@@ -1,1 +1,5 @@
-..
+      Quote quote = GetQuote(quoteQti, qtiModel);
+      _logger.Debug($"quote.QTINumber=>{quote.QTINumber}");
+      quote.StatusId = GetReference("QUOTE_STATUS", quoteQti.QTI_STATE, qtiModel.CountryId).FirstOrDefault().ReferenceId;
+
+'GetReference("QUOTE_STATUS", quoteQti.QTI_STATE, qtiModel.CountryId).FirstOrDefault()' is null on at least one execution path.
