@@ -16,3 +16,62 @@
 
 
 GetReference("QUOTE_STATUS", quoteQti.QTI_STATE, qtiModel.CountryId).FirstOrDefault()' is null on at least one execution path.
+
+if (qttPerquiste.QTTDetails != null)
+{
+    // PerquisiteValueForDriver
+    var perquisiteForDriver = qttPerquiste.QTTDetails.FirstOrDefault(f => f.PARAMETER_CODE == QuoteConstants.PERQUISTE_VALUE_FOR_DRIVER);
+    if (perquisiteForDriver != null && decimal.TryParse(perquisiteForDriver.PARAMETER_VALUE, out var perquisiteValueForDriver))
+    {
+        viewModel.PerquisiteValueForDriver = perquisiteValueForDriver;
+        _logger.Debug("PerquisiteValueForDriver fetched");
+    }
+    else
+    {
+        _logger.Warn("PerquisiteValueForDriver not found or invalid format");
+    }
+
+    // Determine perquisiteSearchText based on EngineCapacity
+    var perquisiteSearchText = viewModel.EngineCapacity <= 1600
+        ? QuoteConstants.ENGINE_CAPACITY_LESS_THAN_1600
+        : QuoteConstants.ENGINE_CAPACITY_GREATER_THAN_1600;
+
+    // PerquisiteValuePerMonth
+    var perquisiteValuePerMonth = qttPerquiste.QTTDetails.FirstOrDefault(f => f.PARAMETER_CODE == perquisiteSearchText);
+    if (perquisiteValuePerMonth != null && decimal.TryParse(perquisiteValuePerMonth.PARAMETER_VALUE, out var valuePerMonth))
+    {
+        viewModel.PerquisiteValuePerMonth = valuePerMonth;
+        _logger.Debug("PerquisiteValuePerMonth fetched");
+    }
+    else
+    {
+        _logger.Warn("PerquisiteValuePerMonth not found or invalid format");
+    }
+
+    // AmountLessThan1600CC
+    var amountLessThan1600 = qttPerquiste.QTTDetails.FirstOrDefault(f => f.PARAMETER_CODE == QuoteConstants.ENGINE_CAPACITY_LESS_THAN_1600);
+    if (amountLessThan1600 != null && decimal.TryParse(amountLessThan1600.PARAMETER_VALUE, out var lessThan1600Value))
+    {
+        viewModel.AmountLessthan1600CC = lessThan1600Value;
+    }
+    else
+    {
+        _logger.Warn("AmountLessThan1600CC not found or invalid format");
+    }
+
+    // AmountGreaterThan1600CC
+    var amountGreaterThan1600 = qttPerquiste.QTTDetails.FirstOrDefault(f => f.PARAMETER_CODE == QuoteConstants.ENGINE_CAPACITY_GREATER_THAN_1600);
+    if (amountGreaterThan1600 != null && decimal.TryParse(amountGreaterThan1600.PARAMETER_VALUE, out var greaterThan1600Value))
+    {
+        viewModel.AmountGreaterthan1600CC = greaterThan1600Value;
+    }
+    else
+    {
+        _logger.Warn("AmountGreaterThan1600CC not found or invalid format");
+    }
+}
+else
+{
+    _logger.Warn("QTTDetails is null");
+}
+
