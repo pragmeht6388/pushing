@@ -1,1 +1,5 @@
 ..
+
+  Stream newStream = await http.GetRequestStreamAsync();
+
+Await WriteAsync instead.
