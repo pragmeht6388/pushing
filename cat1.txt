@@ -13,3 +13,20 @@
 
 
 'carPolicy.CarPolicyParameter.FirstOrDefault(c => c.Parameter.ReferenceName == Constants.MAX_OPTIONS_ACCESSORIES_PERCENTAGE)' is null on at least one execution path.
+
+var carPolicy = qtiModel.Carpolicy;
+
+var maxOptionsAccessoriesCurrency = carPolicy.CarPolicyParameter
+    .FirstOrDefault(c => c.Parameter.ReferenceName == Constants.MAX_OPTIONS_ACCESSORIES_CURRENCY);
+if (maxOptionsAccessoriesCurrency != null)
+{
+    accessoriesPriceLimit = maxOptionsAccessoriesCurrency.ParameterValue;
+}
+
+var maxOptionsAccessoriesPercentage = carPolicy.CarPolicyParameter
+    .FirstOrDefault(c => c.Parameter.ReferenceName == Constants.MAX_OPTIONS_ACCESSORIES_PERCENTAGE);
+if (maxOptionsAccessoriesPercentage != null)
+{
+    accessoriesPercentageLimit = maxOptionsAccessoriesPercentage.ParameterValue;
+}
+
