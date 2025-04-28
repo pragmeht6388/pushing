@@ -31,4 +31,32 @@ public static async Task<U> PostAsync<T, U>(this HttpClient client, string actio
     return responseObject;
 }
 
+public static async Task<U> PostAsync<T, U>(this HttpClient client, string actionName, T inputObject)
+{
+    _logger.Debug("PostAsync method called. With 3 parameters.");
+
+    // Serialize the input object to JSON
+    var json = JsonConvert.SerializeObject(inputObject);
+    var requestUrl = new Uri(client.BaseAddress.AbsoluteUri + @"/" + actionName);
+
+    // Create the HttpContent with the JSON payload
+    var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+    // Send the POST request asynchronously
+    var response = await client.PostAsync(requestUrl, content);
+
+    // Read the response content
+    var responseContent = await response.Content.ReadAsStringAsync();
+
+    // Log the raw response
+    _logger.Debug($"Post Async log for raw response: {responseContent}");
+
+    // Deserialize the response content to the expected result type
+    var responseObject = JsonConvert.DeserializeObject<U>(responseContent);
+
+    _logger.Debug("PostAsync method call completed");
+    return responseObject;
+}
+
+
 Await WriteAsync instead.
