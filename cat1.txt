@@ -3,9 +3,41 @@
 
 'GetReference("QUOTE_STATUS", quoteQti.QTI_STATE, qtiModel.CountryId).FirstOrDefault()' is null on at least one execution path.
 
+var reference = GetReference("QUOTE_STATUS", quoteQti.QTI_STATE, qtiModel.CountryId).FirstOrDefault();
+if (reference != null)
+{
+    quote.StatusId = reference.ReferenceId;
+}
+else
+{
+    // Handle the case where no matching reference was found
+    // For example, you might want to set a default value or throw a meaningful exception
+    quote.StatusId = default; // Or any other default value
+}
 
+else
+{
+    // Optionally log or throw an exception
+    // Log.Warn("No reference found for Quote Status");
+    throw new InvalidOperationException("No matching quote status reference found.");
+}
 
  Quote quote = GetQuote(quoteQti, qtiModel);
  quote.StatusId = GetReference("QUOTE_STATUS", quoteQti.QTI_STATE, qtiModel.CountryId).FirstOrDefault().ReferenceId;
+
+
+Quote quote = GetQuote(quoteQti, qtiModel);
+var reference = GetReference("QUOTE_STATUS", quoteQti.QTI_STATE, qtiModel.CountryId).FirstOrDefault();
+
+if (reference != null)
+{
+    quote.StatusId = reference.ReferenceId;
+}
+else
+{
+    // Handle the case when no matching reference is found.
+    // For example, you could log a warning or assign a default value to StatusId.
+    quote.StatusId = default; // Or any appropriate default value.
+}
 
 'GetReference("QUOTE_STATUS", quoteQti.QTI_STATE, qtiModel.CountryId).FirstOrDefault()' is null on at least one execution path.
