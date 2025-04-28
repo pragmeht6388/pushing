@@ -2,3 +2,10 @@
  quote.StatusId = GetReference("QUOTE_STATUS", quoteQti.QTI_STATE, qtiModel.CountryId).FirstOrDefault().ReferenceId;
 
 'GetReference("QUOTE_STATUS", quoteQti.QTI_STATE, qtiModel.CountryId).FirstOrDefault()' is null on at least one execution path.
+
+
+
+ Quote quote = GetQuote(quoteQti, qtiModel);
+ quote.StatusId = GetReference("QUOTE_STATUS", quoteQti.QTI_STATE, qtiModel.CountryId).FirstOrDefault().ReferenceId;
+
+'GetReference("QUOTE_STATUS", quoteQti.QTI_STATE, qtiModel.CountryId).FirstOrDefault()' is null on at least one execution path.
