@@ -1,32 +1,4 @@
-     var carPolicy = qtiModel.Carpolicy;
-     if (carPolicy.CarPolicyParameter.FirstOrDefault(c => c.Parameter.ReferenceName == Constants.MAX_OPTIONS_ACCESSORIES_CURRENCY) != null)
-     {
-         accessoriesPriceLimit = carPolicy.CarPolicyParameter.FirstOrDefault(c => c.Parameter.ReferenceName == Constants.MAX_OPTIONS_ACCESSORIES_CURRENCY).ParameterValue;
-     }
-     if (carPolicy.CarPolicyParameter.FirstOrDefault(c => c.Parameter.ReferenceName == Constants.MAX_OPTIONS_ACCESSORIES_PERCENTAGE) != null)
-     {
-         accessoriesPercentageLimit = carPolicy.CarPolicyParameter.FirstOrDefault(c => c.Parameter.ReferenceName == Constants.MAX_OPTIONS_ACCESSORIES_PERCENTAGE).ParameterValue;
-     }
+ Quote quote = GetQuote(quoteQti, qtiModel);
+ quote.StatusId = GetReference("QUOTE_STATUS", quoteQti.QTI_STATE, qtiModel.CountryId).FirstOrDefault().ReferenceId;
 
-
-'carPolicy.CarPolicyParameter.FirstOrDefault(c => c.Parameter.ReferenceName == Constants.MAX_OPTIONS_ACCESSORIES_PERCENTAGE)' is null on at least one execution path.
-
-
-'carPolicy.CarPolicyParameter.FirstOrDefault(c => c.Parameter.ReferenceName == Constants.MAX_OPTIONS_ACCESSORIES_PERCENTAGE)' is null on at least one execution path.
-
-var carPolicy = qtiModel.Carpolicy;
-
-var maxOptionsAccessoriesCurrency = carPolicy.CarPolicyParameter
-    .FirstOrDefault(c => c.Parameter.ReferenceName == Constants.MAX_OPTIONS_ACCESSORIES_CURRENCY);
-if (maxOptionsAccessoriesCurrency != null)
-{
-    accessoriesPriceLimit = maxOptionsAccessoriesCurrency.ParameterValue;
-}
-
-var maxOptionsAccessoriesPercentage = carPolicy.CarPolicyParameter
-    .FirstOrDefault(c => c.Parameter.ReferenceName == Constants.MAX_OPTIONS_ACCESSORIES_PERCENTAGE);
-if (maxOptionsAccessoriesPercentage != null)
-{
-    accessoriesPercentageLimit = maxOptionsAccessoriesPercentage.ParameterValue;
-}
-
+'GetReference("QUOTE_STATUS", quoteQti.QTI_STATE, qtiModel.CountryId).FirstOrDefault()' is null on at least one execution path.
