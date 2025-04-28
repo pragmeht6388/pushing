@@ -1,1 +1,9 @@
-..
+      try
+      {
+     
+          IEnumerable<Claim> claims = ((ClaimsIdentity)User.Identity).Claims;
+
+          var QV2Maintenance = HttpContext.User.FindFirst("QV2Maintenance");
+          var QV2Maintenance1 = HttpContext.User.FindFirst("mobileno");
+
+      }
