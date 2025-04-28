@@ -1,21 +1,32 @@
-      try
-      {
-     
-          IEnumerable<Claim> claims = ((ClaimsIdentity)User.Identity).Claims;
+   public static async Task<U> PostAsync<T, U>(this HttpClient client, string actionName, T inputObject)
+   {
+       _logger.Debug("PostAsync method called. With 3 paramters.");
+       var json = JsonConvert.SerializeObject(inputObject);
+       var requestUrl = new Uri(client.BaseAddress.AbsoluteUri + @"/" + actionName);
 
-          var QV2Maintenance = HttpContext.User.FindFirst("QV2Maintenance");
-          var QV2Maintenance1 = HttpContext.User.FindFirst("mobileno");
+       var http = (HttpWebRequest)WebRequest.Create(requestUrl);
+       http.Proxy = new WebProxy();
+       http.Accept = "application/json";
+       http.ContentType = "application/json";
+       http.Method = "POST";
 
-      }
+       string parsedContent = json;
+       ASCIIEncoding encoding = new ASCIIEncoding();
+       byte[] bytes = encoding.GetBytes(parsedContent);
 
+       Stream newStream = await http.GetRequestStreamAsync();
+       newStream.Write(bytes, 0, bytes.Length);
+       newStream.Close();
 
-    // Get the ClaimsIdentity from the current user
-    IEnumerable<Claim> claims = ((ClaimsIdentity)User.Identity).Claims;
+       var response = await http.GetResponseAsync();
 
-    // Find specific claims by their type
-    var qv2MaintenanceClaim = claims.FirstOrDefault(c => c.Type == "QV2Maintenance");
-    var phoneNumberClaim = claims.FirstOrDefault(c => c.Type == "mobileno");
+       var stream = response.GetResponseStream();
+       var sr = new StreamReader(stream);
+       var content = await sr.ReadToEndAsync();
+       _logger.Debug($"Post Async log for raw resposne {content}");
+       var responseObject = JsonConvert.DeserializeObject<U>(content);
+       _logger.Debug("PostAsync method call completed");
+       return responseObject;
+   }
 
-    // Check if the claims exist and get their value
-    string qv2Maintenance = qv2MaintenanceClaim?.Value;
-    string phoneNumber = phoneNumberClaim?.Value;
+ALDQuote.Quotation.Business/ProxyClass.cs
