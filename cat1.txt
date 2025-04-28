@@ -1,1 +1,15 @@
-..
+     var carPolicy = qtiModel.Carpolicy;
+     if (carPolicy.CarPolicyParameter.FirstOrDefault(c => c.Parameter.ReferenceName == Constants.MAX_OPTIONS_ACCESSORIES_CURRENCY) != null)
+     {
+         accessoriesPriceLimit = carPolicy.CarPolicyParameter.FirstOrDefault(c => c.Parameter.ReferenceName == Constants.MAX_OPTIONS_ACCESSORIES_CURRENCY).ParameterValue;
+     }
+     if (carPolicy.CarPolicyParameter.FirstOrDefault(c => c.Parameter.ReferenceName == Constants.MAX_OPTIONS_ACCESSORIES_PERCENTAGE) != null)
+     {
+         accessoriesPercentageLimit = carPolicy.CarPolicyParameter.FirstOrDefault(c => c.Parameter.ReferenceName == Constants.MAX_OPTIONS_ACCESSORIES_PERCENTAGE).ParameterValue;
+     }
+
+
+'carPolicy.CarPolicyParameter.FirstOrDefault(c => c.Parameter.ReferenceName == Constants.MAX_OPTIONS_ACCESSORIES_PERCENTAGE)' is null on at least one execution path.
+
+
+'carPolicy.CarPolicyParameter.FirstOrDefault(c => c.Parameter.ReferenceName == Constants.MAX_OPTIONS_ACCESSORIES_PERCENTAGE)' is null on at least one execution path.
