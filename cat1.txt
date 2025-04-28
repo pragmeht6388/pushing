@@ -7,3 +7,15 @@
           var QV2Maintenance1 = HttpContext.User.FindFirst("mobileno");
 
       }
+
+
+    // Get the ClaimsIdentity from the current user
+    IEnumerable<Claim> claims = ((ClaimsIdentity)User.Identity).Claims;
+
+    // Find specific claims by their type
+    var qv2MaintenanceClaim = claims.FirstOrDefault(c => c.Type == "QV2Maintenance");
+    var phoneNumberClaim = claims.FirstOrDefault(c => c.Type == "mobileno");
+
+    // Check if the claims exist and get their value
+    string qv2Maintenance = qv2MaintenanceClaim?.Value;
+    string phoneNumber = phoneNumberClaim?.Value;
