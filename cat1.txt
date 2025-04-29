@@ -13,3 +13,37 @@
             });
         return true;
     }
+
+
+
+import { Injectable } from '@angular/core';
+import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { Observable, of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
+import { SharedService } from './shared.service'; // Update path as needed
+import { ALD_API } from './api.constants'; // Update path as needed
+
+@Injectable({
+  providedIn: 'root'
+})
+export class YourGuardName implements CanActivate {
+
+  constructor(private _sharedService: SharedService, private router: Router) {}
+
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
+    return this._sharedService.get(ALD_API.QUOTATION.Maintenance).pipe(
+      map((resp: string) => {
+        const isAllowed = resp.toLowerCase() === 'true';
+        if (isAllowed) {
+          this.router.navigate(['/ald-maintenance']);
+          return false; // Block the current route
+        }
+        return true; // Allow route
+      }),
+      catchError(() => {
+        return of(true); // Allow route if there's an error
+      })
+    );
+  }
+}
+
