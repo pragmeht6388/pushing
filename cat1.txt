@@ -54,3 +54,6 @@ export class YourComponent implements OnInit {
     });
   }
 }
+
+
+const isAllowed = resp === 'true';
