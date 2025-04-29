@@ -1,1 +1,15 @@
-..
+    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+
+
+        this._sharedService.get(ALD_API.QUOTATION.Maintenance).subscribe((resp: string) => {
+            this.aldconfig = resp
+         
+            if (resp.toLowerCase() === "true") {
+                this.router.navigate(['/ald-maintenance']);
+            }
+        },
+            () => {
+                return true;
+            });
+        return true;
+    }
