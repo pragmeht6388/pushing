@@ -12,3 +12,45 @@
         return of(true); // Allow route if there's an error
       })
     );
+
+
+
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
+import { SharedService } from 'path-to-shared-service';
+import { ALD_API } from 'path-to-api-constants';
+
+@Component({
+  selector: 'app-your-component',
+  templateUrl: './your-component.component.html',
+})
+export class YourComponent implements OnInit {
+
+  constructor(
+    private _sharedService: SharedService,
+    private router: Router
+  ) {}
+
+  ngOnInit(): void {
+    this._sharedService.get(ALD_API.QUOTATION.Maintenance).pipe(
+      map((resp: string) => {
+        const isAllowed = resp.toLowerCase() === 'true';
+        if (isAllowed) {
+          this.router.navigate(['/ald-maintenance']);
+        }
+        return isAllowed;
+      }),
+      catchError(() => {
+        // Optional: Handle error (e.g. show a message)
+        return of(false); // Treat as not allowed on error
+      })
+    ).subscribe((isAllowed: boolean) => {
+      if (!isAllowed) {
+        // Optionally handle when not allowed
+        console.log('Navigation to ald-maintenance blocked or skipped.');
+      }
+    });
+  }
+}
