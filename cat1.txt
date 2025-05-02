@@ -1,2 +1,26 @@
  //const int iterations = 100_000;
  //using Rfc2898DeriveBytes encryptionKey = new Rfc2898DeriveBytes(password, saltBytes, iterations , HashAlgorithmName.SHA256);
+
+      public static KeyandInitializationVector GetKeyandIV(bool IsExistingKey, string password, byte[] saltBytes = null)
+      {
+          if (!IsExistingKey)
+          {
+              saltBytes = new byte[16];
+
+              using (var rng = RandomNumberGenerator.Create())
+              {
+                  rng.GetBytes(saltBytes);
+              }
+          }
+          //const int iterations = 100_000;
+          //using Rfc2898DeriveBytes encryptionKey = new Rfc2898DeriveBytes(password, saltBytes, iterations , HashAlgorithmName.SHA256);
+          Rfc2898DeriveBytes encryptionKey = new Rfc2898DeriveBytes(password, saltBytes, 10);
+          byte[] key = encryptionKey.GetBytes(32);
+          byte[] iv = encryptionKey.GetBytes(16);
+
+          return new KeyandInitializationVector
+          {
+              Key = key,
+              InitializationVector = iv
+          };
+      }
