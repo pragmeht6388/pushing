@@ -26,3 +26,53 @@ This security hotspot needs to be reviewed to assess whether the code poses a ri
 
         }
     }
+
+
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography;
+
+public List<PreCalculation> GetPreCalculationListRandom(Dictionary<string, object> dictionary)
+{
+    int pageSize = (int)dictionary["PageSize"];
+    var query = SearchQuery<PreCalculationIndia>(dictionary);
+
+    var preCalcIdList = query.Select(p => p.PreCalcId).ToList();
+    var count = preCalcIdList.Count;
+    
+    if (count <= pageSize)
+    {
+        return query.ToList<PreCalculation>();
+    }
+    else
+    {
+        var randomUniqueNumber = GenerateSecureRandomIndices(count, pageSize)
+                                 .Select(c => preCalcIdList[c]);
+
+        return query.Where(r => randomUniqueNumber.Contains(r.PreCalcId)).ToList<PreCalculation>();
+    }
+}
+
+private List<int> GenerateSecureRandomIndices(int range, int count)
+{
+    List<int> uniqueIndices = new List<int>();
+    using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
+    {
+        while (uniqueIndices.Count < count)
+        {
+            byte[] randomByte = new byte[4]; // To generate an int
+            rng.GetBytes(randomByte);
+            int randomValue = BitConverter.ToInt32(randomByte, 0);
+            int index = Math.Abs(randomValue) % range; // Ensure it's within the valid range
+
+            if (!uniqueIndices.Contains(index)) // Ensure uniqueness
+            {
+                uniqueIndices.Add(index);
+            }
+        }
+    }
+
+    return uniqueIndices;
+}
