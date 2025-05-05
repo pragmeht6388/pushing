@@ -152,3 +152,134 @@
 
 
 Refactor this method to reduce its Cognitive Complexity from 34 to the 15 allowed.
+
+
+public async Task<dynamic> GetCashFlowSavings(int quoteId, string jwtToken, int countryId)
+{
+    _logger.Debug("CalculateCashFlowSavings method called");
+    try
+    {
+        var quote = QuotationDataService.GetQuotation(quoteId, countryId);
+        var qttPerquiste = QuotationDataService.GetQTTInformation(QuoteConstants.PERQUISTE);
+        var quoteDataList = QuotationDataService.GetQuoteData(quoteId).ToList();
+
+        dynamic viewModel = new ExpandoObject();
+        viewModel.Duration = quote.Duration;
+
+        await PopulateCustomerVehiclePolicyDetails(viewModel, quote, jwtToken);
+        viewModel.IncomeTaxRate = ((Customer)viewModel.Customer).IncomeTaxRate;
+        viewModel.QuoteId = quoteId;
+        viewModel.IsQuotationSaved = !string.IsNullOrWhiteSpace(quote.QuoteNumber);
+        viewModel.VehicleMake = GetVehicleMake(viewModel.Vehicle);
+        viewModel.LeaseInstallment = quote.MonthlyLease;
+        viewModel.EngineCapacity = ((VehicleVersion)viewModel.Vehicle).Engine;
+
+        SetReimbursements(viewModel, quoteDataList, quote.QuoteId);
+        viewModel.PerquisteTable = BuildPerquisiteTable(qttPerquiste);
+        SetPerquisiteValues(viewModel, qttPerquiste, (int)viewModel.EngineCapacity);
+        SetMonthlyEffectiveCost(viewModel, quoteDataList, quote.QuoteId);
+
+        return viewModel;
+    }
+    catch (Exception ex)
+    {
+        _logger.Error("Error in GetCashFlowSavings", ex);
+        return null;
+    }
+}
+
+
+
+private async Task PopulateCustomerVehiclePolicyDetails(dynamic viewModel, Quotation quote, string jwtToken)
+{
+    using var quotationConsumerService = new QuotationConsumerService();
+    var customerTask = quotationConsumerService.GetCustomer(quote.CustomerId, jwtToken);
+    var vehicleTask = quotationConsumerService.GetVehicle(quote.VehicleVersionId, jwtToken);
+    var carpolicyTask = quotationConsumerService.GetCarpolicy(quote.CarPolicyId.Value, jwtToken);
+
+    await Task.WhenAll(customerTask, vehicleTask, carpolicyTask);
+
+    viewModel.Customer = customerTask.Result;
+    viewModel.Vehicle = vehicleTask.Result;
+    viewModel.Policy = carpolicyTask.Result;
+
+    _logger.Debug("Fetched customer, vehicle, and carpolicy");
+}
+
+private string GetVehicleMake(object vehicleObj)
+{
+    var vehicle = (VehicleVersion)vehicleObj;
+    return $"{vehicle.VehicleMake.VehicleMakeName} {vehicle.VehicleModel.VehicleModelName} {vehicle.VersionName}";
+}
+
+private void SetReimbursements(dynamic viewModel, List<QuoteData> quoteDataList, int quoteId)
+{
+    viewModel.AnnualDriverReimbursement = GetDecimalValue(quoteDataList, QuoteConstants.DRIVER_REIMBURSEMENT, quoteId);
+    viewModel.AnnualFuelReimbursement = GetDecimalValue(quoteDataList, QuoteConstants.FUEL_REIMBURSEMENT, quoteId);
+    _logger.Debug("Reimbursements set");
+}
+
+private decimal GetDecimalValue(List<QuoteData> dataList, string code, int quoteId)
+{
+    var item = dataList.FirstOrDefault(u => u.QUOP_CODE == code && u.QUOT_ID == quoteId.ToString());
+    return item != null && decimal.TryParse(item.QUOD_VALUE, out var value) ? value : 0;
+}
+
+private string BuildPerquisiteTable(QTTInformation qttPerquiste)
+{
+    var table = new StringBuilder("<div align='center'>Perquisite Value for company provided <br/> car and driver.</div>");
+    table.Append("<table><thead class='thead-inverse' style='background-color:#20BADA'><tr><th>Type of Car</th><th>Rate of tax</th></tr></thead><tbody>");
+    
+    if (qttPerquiste?.QTTDetails != null)
+    {
+        foreach (var detail in qttPerquiste.QTTDetails)
+        {
+            table.Append($"<tr><td>{detail.PARAMETER_CODE}</td><td>{detail.PARAMETER_VALUE}</td></tr>");
+        }
+    }
+
+    table.Append("</tbody></table>");
+    return table.ToString();
+}
+
+private void SetPerquisiteValues(dynamic viewModel, QTTInformation qtt, int engineCapacity)
+{
+    var details = qtt?.QTTDetails;
+    if (details == null)
+    {
+        SetDefaultPerquisites(viewModel);
+        return;
+    }
+
+    viewModel.PerquisiteValueForDriver = TryGetDecimal(details, QuoteConstants.PERQUISTE_VALUE_FOR_DRIVER);
+    var capacityCode = engineCapacity <= 1600 ? QuoteConstants.ENGINE_CAPACITY_LESS_THAN_1600 : QuoteConstants.ENGINE_CAPACITY_GREATER_THAN_1600;
+    viewModel.PerquisiteValuePerMonth = TryGetDecimal(details, capacityCode);
+    viewModel.AmountLessthan1600CC = TryGetDecimal(details, QuoteConstants.ENGINE_CAPACITY_LESS_THAN_1600);
+    viewModel.AmountGreaterthan1600CC = TryGetDecimal(details, QuoteConstants.ENGINE_CAPACITY_GREATER_THAN_1600);
+
+    _logger.Debug("Perquisite values set");
+}
+
+private void SetDefaultPerquisites(dynamic viewModel)
+{
+    viewModel.PerquisiteValueForDriver = 0;
+    viewModel.PerquisiteValuePerMonth = 0;
+    viewModel.AmountLessthan1600CC = 0;
+    viewModel.AmountGreaterthan1600CC = 0;
+    _logger.Warn("Default perquisite values set due to missing data");
+}
+
+private decimal TryGetDecimal(IEnumerable<QTTDetail> details, string code)
+{
+    var item = details.FirstOrDefault(f => f.PARAMETER_CODE == code);
+    return item != null && decimal.TryParse(item.PARAMETER_VALUE, out var value) ? value : 0;
+}
+
+private void SetMonthlyEffectiveCost(dynamic viewModel, List<QuoteData> quoteDataList, int quoteId)
+{
+    var item = quoteDataList.FirstOrDefault(u => u.QUOP_CODE == QuoteConstants.MONTHLY_EFFECTIVE_COST && u.QUOT_ID == quoteId.ToString());
+    viewModel.SavingOverEmpLoanOption = item != null && double.TryParse(item.QUOD_VALUE, out var value) ? value : 0;
+    _logger.Debug("Monthly effective cost set");
+}
+
+
