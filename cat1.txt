@@ -1,22 +1,5 @@
-{
-  "ConnectionStrings": {
-    "Default": "Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=ALDQuote;server=192.252.242.51,14001;"
-  },
-  "ProxyURL": "http://192.168.100.15:80",
-  "ImageDirectorypath": "C:\\Users\\RAJENDRAYYA\\Downloads",
-  "MyNewCarUrls": {
-    "GetToken": "https://admin.mynewcar.in/MNC-API/generate/token?Client_id=ald&Client_secret=bXluZXdjYXI6MTFlNmE0ZGM3MjYyYzMwNmNlMGYyZjVmNDk0NTVhNDFhMjMyMTViMg",
-    "DownloadAllImages": "https://admin.mynewcar.in/MNC-API/download/allImages?image_type=All&brand=&model=",
-    "PostNewVehicleDetails": "https://admin.mynewcar.in/MNC-API/request/newmodel"
-  },
-  "ImageISSSetting": {
-    "ImgeAppPool": "MynewCarImagesApp",
-    "ImageSite": "MynewCarImages",
-    "ImageAppliction": "QuoteV2Images",
-    "ImageApplictionPath": "C:\\Users\\RAJENDRAYYA\\IISMyNewCar\\QuoteV2Images"
-  },
-  "Environment": "DEVELOPMENT"
-}
+Make sure that using this pseudorandom number generator is safe here
 
-Client_secre detected here make sure it is not hardcoded here
+Using pseudorandom number generators (PRNGs) is security-sensitivecsharpsquid:S2245
 
+This security hotspot needs to be reviewed to assess whether the code poses a risk.
