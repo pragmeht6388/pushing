@@ -3,3 +3,26 @@ Make sure that using this pseudorandom number generator is safe here
 Using pseudorandom number generators (PRNGs) is security-sensitivecsharpsquid:S2245
 
 This security hotspot needs to be reviewed to assess whether the code poses a risk.
+
+
+    public List<PreCalculation> GetPreCalculationListRandom(Dictionary<string, object> dictionary)
+    {
+        int pageSize = (int)dictionary["PageSize"];
+        var query = SearchQuery<PreCalculationIndia>(dictionary);
+
+        var preCalcIdList = query.Select(p => p.PreCalcId).ToList();
+        var count = preCalcIdList.Count;
+        if (count <= pageSize)
+        {
+            return query.ToList<PreCalculation>();
+        }
+        else
+        {
+            var random = new Random();
+            var randomUniqueNumber = Enumerable.Range(0, int.MaxValue).Select(i => random.Next(0, count)).Distinct().Take(pageSize)
+                                                .Select(c => preCalcIdList[c]);
+
+            return query.Where(r => randomUniqueNumber.Contains(r.PreCalcId)).ToList<PreCalculation>();
+
+        }
+    }
