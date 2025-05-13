@@ -1,78 +1,19 @@
-Make sure that using this pseudorandom number generator is safe here
+Serial No 	Topic	Content 
+1	Operation Timing	We will be operating from {#var#} AM to {#var#} PM only on  {#var#}. In case of emergency, kindly reach us on 1800 209 5253.
+2	Network issue	Due to network issues from our service call provider, we might miss your call. We urge you to e-mail us at India.care@ayvens.com for a quicker response.
 
-Using pseudorandom number generators (PRNGs) is security-sensitivecsharpsquid:S2245
+3	Services halted	Due to unforeseen circumstances, we have had to temporarily halt our service operations. This may impact our response time to your requests. Till situation normalizes, we request your cooperation. In case of any queries, please contact us at India.care@ayvens.com or call toll free on 1800 209 5253.
 
-This security hotspot needs to be reviewed to assess whether the code poses a risk.
+4	High call volumes	Due to high volume of enquiries, there might be a delay in responding to your calls. Kindly reach us at India.care@ayvens.com
 
+5	Delay in response	In the current circumstances, kindly bear with us incase of delay in responding to your queries/appointments. We wish for your safety - ALD Automotive
+6	Avoid driving	As per the Govt announcement, we urge you to be safe and avoid driving in the current situation. Reach us on India.care@ayvens.com or call toll free on 1800 209 5253.
 
-    public List<PreCalculation> GetPreCalculationListRandom(Dictionary<string, object> dictionary)
-    {
-        int pageSize = (int)dictionary["PageSize"];
-        var query = SearchQuery<PreCalculationIndia>(dictionary);
+7	Operating remotely	We are operating remotely and catering to your need in the best way possible. Kindly bear with us and reach us on India.care@ayvens.com or call toll free on 1800 209 5253.
 
-        var preCalcIdList = query.Select(p => p.PreCalcId).ToList();
-        var count = preCalcIdList.Count;
-        if (count <= pageSize)
-        {
-            return query.ToList<PreCalculation>();
-        }
-        else
-        {
-            var random = new Random();
-            var randomUniqueNumber = Enumerable.Range(0, int.MaxValue).Select(i => random.Next(0, count)).Distinct().Take(pageSize)
-                                                .Select(c => preCalcIdList[c]);
+8	Towing service	Due to surge in the towing services, service delivery might be impacted and priority will be for the stranded vehicles. We assure you to extend our best support.
+9	RSA for effected vehicles	Due to current circumstances, please be cautious and safe. We are providing {#var#} road side assistance especially for affected vehicles. Reach out to our roadside assistance team on 1800 209 5253. T&C Apply
+10	Call service down	Due to technical issues from our service call provider, we might miss your call. We urge you to reach us at India.care@ayvens.com for a quicker response.
 
-            return query.Where(r => randomUniqueNumber.Contains(r.PreCalcId)).ToList<PreCalculation>();
-
-        }
-    }
-
-
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-
-public List<PreCalculation> GetPreCalculationListRandom(Dictionary<string, object> dictionary)
-{
-    int pageSize = (int)dictionary["PageSize"];
-    var query = SearchQuery<PreCalculationIndia>(dictionary);
-
-    var preCalcIdList = query.Select(p => p.PreCalcId).ToList();
-    var count = preCalcIdList.Count;
-    
-    if (count <= pageSize)
-    {
-        return query.ToList<PreCalculation>();
-    }
-    else
-    {
-        var randomUniqueNumber = GenerateSecureRandomIndices(count, pageSize)
-                                 .Select(c => preCalcIdList[c]);
-
-        return query.Where(r => randomUniqueNumber.Contains(r.PreCalcId)).ToList<PreCalculation>();
-    }
-}
-
-private List<int> GenerateSecureRandomIndices(int range, int count)
-{
-    List<int> uniqueIndices = new List<int>();
-    using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
-    {
-        while (uniqueIndices.Count < count)
-        {
-            byte[] randomByte = new byte[4]; // To generate an int
-            rng.GetBytes(randomByte);
-            int randomValue = BitConverter.ToInt32(randomByte, 0);
-            int index = Math.Abs(randomValue) % range; // Ensure it's within the valid range
-
-            if (!uniqueIndices.Contains(index)) // Ensure uniqueness
-            {
-                uniqueIndices.Add(index);
-            }
-        }
-    }
-
-    return uniqueIndices;
-}
+11	 	Due to the current restriction guidelines, there is an impact on the services provided from our end. However, we will try our level best to provide the services on a timely basis as committed or we will share an alternative to ensure smooth functioning of service from our end. Your patience here is highly appreciated.
+12	No Electricity 	Due to power cut, please expect a delay in the services. Your patience here is highly appreciated. 
