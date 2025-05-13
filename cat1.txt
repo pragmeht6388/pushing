@@ -1,1 +1,2 @@
-Replace("\\r", "").Replace("\\n", "")
+const cleanJsonString = response.CrisisCommunicationConfig.replace(/\\r\\n/g, '');
+    this.crisisMessages = JSON.parse(cleanJsonString);
