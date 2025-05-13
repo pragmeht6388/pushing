@@ -1,2 +1,6 @@
-const cleanJsonString = response.CrisisCommunicationConfig.replace(/\\r\\n/g, '');
-    this.crisisMessages = JSON.parse(cleanJsonString);
+export interface CrisisCommunication {
+  "Serial No": number;
+  Topic: string;
+  Content: string;
+  IsActive: boolean;
+}
