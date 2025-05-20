@@ -60,3 +60,68 @@ namespace ProspectToDriverConverter
 
 
 use bunda async concepto to simplify code
+
+using ALD.AldFirst.Abstraction.Interfaces.Services;
+using Microsoft.Extensions.Hosting;
+using Serilog;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace ProspectToDriverConverter
+{
+    public class ProspectToDriverConverter
+    {
+        private readonly IRoleService _roleService;
+        private readonly IDriverService _driverService;
+
+        public ProspectToDriverConverter(IRoleService roleService, IDriverService driverService)
+        {
+            _roleService = roleService;
+            _driverService = driverService;
+        }
+
+        public async Task ConvertProspectsAsync()
+        {
+            var prospectsResponse = await _roleService.GetAllProspects();
+
+            if (!prospectsResponse.IsSuccess || prospectsResponse.Value == null || !prospectsResponse.Value.Any())
+            {
+                Log.Logger.Warning("No prospects found or failed to retrieve.");
+                return;
+            }
+
+            var prospects = prospectsResponse.Value;
+
+            Log.Logger.Information("Total prospects to convert: {Count}", prospects.Count());
+
+            var convertTasks = prospects.Select(async prospect =>
+            {
+                try
+                {
+                    var response = await _driverService.GetDriver(new ALD.AldFirst.Abstraction.Model.Register
+                    {
+                        EmailAddress = prospect.Email
+                    });
+
+                    if (response.IsSuccess)
+                    {
+                        prospect.RoleId = 1;
+                        await _roleService.UpdateUser(prospect);
+                        Log.Logger.Information("Prospect {Email} converted to driver.", prospect.Email);
+                    }
+                    else
+                    {
+                        Log.Logger.Warning("Prospect {Email} could not be converted to driver (not found).", prospect.Email);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Logger.Error(ex, "Error converting prospect {Email} to driver.", prospect.Email);
+                }
+            });
+
+            await Task.WhenAll(convertTasks); // Run all conversions in parallel
+        }
+    }
+}
