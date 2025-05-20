@@ -1,112 +1,62 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
-
-@Component({
-  selector: 'app-modal',
-  templateUrl: './modal.component.html',
-  styleUrls: ['./modal.component.css']
-})
-export class ModalComponent {
-  @Input() isVisible: boolean = false; // Bind visibility control
-  @Output() close = new EventEmitter<void>(); // Emit close event to parent component
-
-  // Method to close the modal
-  closeModal(): void {
-    this.isVisible = false;
-    this.close.emit();
-  }
+using ALD.AldFirst.Abstraction.Interfaces.Services;
+using ALD.AldFirst.External.Infrastructure.Zoho;
+using Microsoft.Extensions.Hosting;
+using Serilog;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+ 
+namespace ProspectToDriverConverter
+{
+   public class ProspectToDriverConvter
+    {
+        private readonly IRoleService _roleService;
+        private readonly IDriverService _driverService;
+ 
+        public ProspectToDriverConvter(IRoleService roleService, IDriverService driverService)
+        {
+            _roleService = roleService;
+            _driverService = driverService;
+        }
+ 
+        public async Task ConvertProspectsAsync()
+        {
+            var prospects = await _roleService.GetAllProspects();
+            Console.WriteLine(prospects.Value.Count());
+ 
+ 
+            foreach(var prospect in prospects.Value)
+            {
+                try
+                {
+                    var response = await _driverService.GetDriver(new ALD.AldFirst.Abstraction.Model.Register
+                    {
+                        EmailAddress = prospect.Email,
+ 
+                    });
+                    if (response.IsSuccess)
+                    {
+                        prospect.RoleId = 1;
+                        var updateStatus = await _roleService.UpdateUser(prospect);
+                        Log.Logger.Information("Prospect {0} converted to driver: ", prospect.Email);
+                        Console.WriteLine("success");
+                    }
+                    else
+                        Console.WriteLine("Failed");
+                }
+                catch (Exception ex)
+                {
+                    Log.Logger.Information("Prospect {0} failed convert to driver: ", prospect.Email);
+                    Console.WriteLine("Exception : " + ex.Message + " Email: " + prospect.Email);
+                }
+            }
+            Console.ReadLine();
+        }
+    }
 }
 
 
-<div class="modal-backdrop" *ngIf="isVisible" (click)="closeModal()"></div>
-
-<div class="modal" *ngIf="isVisible">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h4>Modal Header</h4>
-      <button class="close-btn" (click)="closeModal()">X</button>
-    </div>
-    <div class="modal-body">
-      <p>This is a custom modal!</p>
-    </div>
-    <div class="modal-footer">
-      <button (click)="closeModal()">Close</button>
-    </div>
-  </div>
-</div>
-
-/* The backdrop style */
-.modal-backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 999; /* Ensure it's on top of other content */
-}
-
-/* The modal itself */
-.modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: white;
-  border-radius: 8px;
-  z-index: 1000; /* Ensure it's above the backdrop */
-  width: 300px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* Modal content */
-.modal-content {
-  padding: 20px;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.modal-footer {
-  text-align: right;
-}
-
-/* Close button */
-.close-btn {
-  background: transparent;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-}
-
-import { Component, OnInit } from '@angular/core';
-
-@Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
-})
-export class AppComponent implements OnInit {
-  isModalVisible = false; // Control the modal visibility
-
-  ngOnInit(): void {
-    this.openModal(); // Open modal on component initialization
-  }
-
-  openModal(): void {
-    this.isModalVisible = true;
-  }
-
-  closeModal(): void {
-    this.isModalVisible = false;
-  }
-}
-<app-modal 
-  [isVisible]="isModalVisible" 
-  (close)="closeModal()">
-</app-modal>
-
-<h1>Welcome to the Angular App</h1>
-<!-- Your content here -->
+use bunda async concepto to simplify code
