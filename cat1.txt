@@ -1,127 +1,19 @@
-using ALD.AldFirst.Abstraction.Interfaces.Services;
-using ALD.AldFirst.External.Infrastructure.Zoho;
-using Microsoft.Extensions.Hosting;
-using Serilog;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
- 
-namespace ProspectToDriverConverter
-{
-   public class ProspectToDriverConvter
-    {
-        private readonly IRoleService _roleService;
-        private readonly IDriverService _driverService;
- 
-        public ProspectToDriverConvter(IRoleService roleService, IDriverService driverService)
-        {
-            _roleService = roleService;
-            _driverService = driverService;
-        }
- 
-        public async Task ConvertProspectsAsync()
-        {
-            var prospects = await _roleService.GetAllProspects();
-            Console.WriteLine(prospects.Value.Count());
- 
- 
-            foreach(var prospect in prospects.Value)
-            {
-                try
-                {
-                    var response = await _driverService.GetDriver(new ALD.AldFirst.Abstraction.Model.Register
-                    {
-                        EmailAddress = prospect.Email,
- 
-                    });
-                    if (response.IsSuccess)
-                    {
-                        prospect.RoleId = 1;
-                        var updateStatus = await _roleService.UpdateUser(prospect);
-                        Log.Logger.Information("Prospect {0} converted to driver: ", prospect.Email);
-                        Console.WriteLine("success");
-                    }
-                    else
-                        Console.WriteLine("Failed");
-                }
-                catch (Exception ex)
-                {
-                    Log.Logger.Information("Prospect {0} failed convert to driver: ", prospect.Email);
-                    Console.WriteLine("Exception : " + ex.Message + " Email: " + prospect.Email);
-                }
-            }
-            Console.ReadLine();
-        }
-    }
-}
+Subject: Thank You and Farewell
 
+Dear Team,
 
-use bunda async concepto to simplify code
+As I reach the end of my time at [Company Name], I want to extend my sincere gratitude to each of you. Working here has been a truly enriching experience, and I feel fortunate to have been part of such a talented and dedicated group of professionals.
 
-using ALD.AldFirst.Abstraction.Interfaces.Services;
-using Microsoft.Extensions.Hosting;
-using Serilog;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
+To my managers, thank you for your leadership, guidance, and the opportunities you've provided me to learn and grow. Your support has played a significant role in shaping my professional journey.
 
-namespace ProspectToDriverConverter
-{
-    public class ProspectToDriverConverter
-    {
-        private readonly IRoleService _roleService;
-        private readonly IDriverService _driverService;
+To my colleagues, thank you for the collaboration, teamwork, and camaraderie. I’ve learned a great deal from each of you, and I deeply appreciate the support, encouragement, and positive working environment we’ve shared.
 
-        public ProspectToDriverConverter(IRoleService roleService, IDriverService driverService)
-        {
-            _roleService = roleService;
-            _driverService = driverService;
-        }
+Although I am moving on to a new chapter, I will always look back on my time at [Company Name] with appreciation and respect.
 
-        public async Task ConvertProspectsAsync()
-        {
-            var prospectsResponse = await _roleService.GetAllProspects();
+Please feel free to stay in touch. You can reach me at [Your Personal Email] or connect with me on LinkedIn: [LinkedIn URL].
 
-            if (!prospectsResponse.IsSuccess || prospectsResponse.Value == null || !prospectsResponse.Value.Any())
-            {
-                Log.Logger.Warning("No prospects found or failed to retrieve.");
-                return;
-            }
+Wishing you all continued success and fulfillment in the work you do.
 
-            var prospects = prospectsResponse.Value;
-
-            Log.Logger.Information("Total prospects to convert: {Count}", prospects.Count());
-
-            var convertTasks = prospects.Select(async prospect =>
-            {
-                try
-                {
-                    var response = await _driverService.GetDriver(new ALD.AldFirst.Abstraction.Model.Register
-                    {
-                        EmailAddress = prospect.Email
-                    });
-
-                    if (response.IsSuccess)
-                    {
-                        prospect.RoleId = 1;
-                        await _roleService.UpdateUser(prospect);
-                        Log.Logger.Information("Prospect {Email} converted to driver.", prospect.Email);
-                    }
-                    else
-                    {
-                        Log.Logger.Warning("Prospect {Email} could not be converted to driver (not found).", prospect.Email);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Log.Logger.Error(ex, "Error converting prospect {Email} to driver.", prospect.Email);
-                }
-            });
-
-            await Task.WhenAll(convertTasks); // Run all conversions in parallel
-        }
-    }
-}
+Warm regards,
+[Your Full Name]
+[Your Job Title]
