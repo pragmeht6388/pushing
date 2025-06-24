@@ -1,19 +1,35 @@
-Subject: Thank You and Farewell
+<template>
+    <ul>
+        <learning-resource v-for="resource in storedResources" :key="resource.id" :title="resource.title"
+            :description="resource.description" :link="resource.link"></learning-resource>
+    </ul>
+</template>
 
-Dear Team,
+<script>
+import LearningResource from './components/LearningResource.vue'
 
-As I reach the end of my time at [Company Name], I want to extend my sincere gratitude to each of you. Working here has been a truly enriching experience, and I feel fortunate to have been part of such a talented and dedicated group of professionals.
-
-To my managers, thank you for your leadership, guidance, and the opportunities you've provided me to learn and grow. Your support has played a significant role in shaping my professional journey.
-
-To my colleagues, thank you for the collaboration, teamwork, and camaraderie. I’ve learned a great deal from each of you, and I deeply appreciate the support, encouragement, and positive working environment we’ve shared.
-
-Although I am moving on to a new chapter, I will always look back on my time at [Company Name] with appreciation and respect.
-
-Please feel free to stay in touch. You can reach me at [Your Personal Email] or connect with me on LinkedIn: [LinkedIn URL].
-
-Wishing you all continued success and fulfillment in the work you do.
-
-Warm regards,
-[Your Full Name]
-[Your Job Title]
+export default {
+    components: {
+        LearningResource
+    },
+    data() {
+        return
+        {
+            storedResources: [
+                {
+                    id: '1',
+                    title: 'Official Description',
+                    description: 'Vue js',
+                    link: 'vuejs.org'
+                },
+                {
+                    id: '2',
+                    title: 'Official Description For Google',
+                    description: 'Google Search',
+                    link: 'google.com'
+                },
+            ]
+        }
+    }
+}
+</script>
