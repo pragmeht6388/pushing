@@ -1,2 +1,42 @@
 [Vue warn]: Component is missing template or render function:  {App: {…}, template: ''}App: {__file: 'src/App.vue', __hmrId: '7ba5bd90', render: ƒ}template: ""[[Prototype]]: Object 
   at <App>
+
+
+App.vue
+<template>
+    <router-view></router-view>
+</template>
+
+
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap");
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    font-family: "Roboto", sans-serif;
+}
+
+body {
+    margin: 0;
+}
+</style>
+
+
+
+main.js
+
+import { createApp } from 'vue';
+import App from './App.vue';
+
+import router from './router.js'
+
+const app = createApp({App});
+
+app.use(router);
+
+
+app.mount('#app');
+
