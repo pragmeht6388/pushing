@@ -40,3 +40,71 @@ app.use(router);
 
 app.mount('#app');
 
+
+
+
+//  sorting.actions.ts
+import localStorage, { SORT_BY_DIRECTION, SORT_BY_PREFERENCE } from '@store/local.storage';
+import { MutationTypes } from './sorting.mutations';
+
+export default {
+    updateSortOption: ({ commit }, { sortingId, newOption }) => {
+        commit(MutationTypes.UPDATE_SORTING_OPTION, { sortingId, newOption });
+
+        localStorage.setItem(`${SORT_BY_PREFERENCE}_${sortingId}`, newOption);
+    },
+    updateSortDirection: ({ commit }, { sortingId, newDirection }) => {
+        commit(MutationTypes.UPDATE_SORTING_DIRECTION, { sortingId, newDirection });
+
+        localStorage.setItem(`${SORT_BY_DIRECTION}_${sortingId}`, newDirection);
+    },
+    resetStoreSorting: ({ commit }) => {
+        commit(MutationTypes.RESET_SORTING);
+    }
+};
+
+
+//  sorting.mutations.ts
+
+export enum MutationTypes {
+    UPDATE_SORTING_OPTION = '[Sorting] Updated specific sort option',
+    UPDATE_SORTING_DIRECTION = '[Sorting] Updated specific sort direction',
+    RESET_SORTING = '[Sorting] Reset sort store',
+}
+
+export default {
+    [MutationTypes.UPDATE_SORTING_DIRECTION]: (state, { sortingId, newDirection }) => {
+        const oldSort = state.sortingMap[sortingId] || {};
+        const updatedSort = { ...oldSort, direction: newDirection };
+
+        state.sortingMap[sortingId] = updatedSort;
+    },
+    [MutationTypes.UPDATE_SORTING_OPTION]: (state, { sortingId, newOption }) => {
+        const oldSort = state.sortingMap[sortingId] || {};
+        const updatedSort = { ...oldSort, option: newOption };
+
+        state.sortingMap[sortingId] = updatedSort;
+    },
+    [MutationTypes.RESET_SORTING]: (state) => {
+        state.sortingMap = {};
+    }
+};
+
+
+//  sorting.state.ts
+export interface State {
+    sortingMap: object;
+}
+
+export const state: State = {
+    sortingMap: {}
+};
+
+
+ESLint: 'UPDATE_SORTING_OPTION' is defined but never used.
+ESLint: Missing return type on function. (@typescript-eslint/explicit-function-return-type)
+
+Local variable updatedSort is redundant 
+
+
+ESLint: Missing return type on function. (@typescript-eslint/explicit-function-return-type)
