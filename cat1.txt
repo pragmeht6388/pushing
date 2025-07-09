@@ -1,7 +1,15 @@
-Vue: Parameter state implicitly has an any type, but a better type may be inferred from usage
+export interface SortConfig {
+    option?: string;
+    direction?: string;
+}
 
-//
-//  sorting.mutations.ts
+export interface State {
+    sortingMap: {
+        [sortingId: string]: SortConfig;
+    };
+}
+
+import { State } from './sorting.state';
 
 export enum MutationTypes {
     UPDATE_SORTING_OPTION = '[Sorting] Updated specific sort option',
@@ -10,17 +18,68 @@ export enum MutationTypes {
 }
 
 export default {
-    [MutationTypes.UPDATE_SORTING_DIRECTION]: (state, { sortingId, newDirection }) : void => {
+    [MutationTypes.UPDATE_SORTING_DIRECTION]: (
+        state: State,
+        { sortingId, newDirection }: { sortingId: string; newDirection: string }
+    ): void => {
         const oldSort = state.sortingMap[sortingId] || {};
-
         state.sortingMap[sortingId] = { ...oldSort, direction: newDirection };
     },
-    [MutationTypes.UPDATE_SORTING_OPTION]: (state, { sortingId, newOption }) :void => {
-        const oldSort = state.sortingMap[sortingId] || {};
 
+    [MutationTypes.UPDATE_SORTING_OPTION]: (
+        state: State,
+        { sortingId, newOption }: { sortingId: string; newOption: string }
+    ): void => {
+        const oldSort = state.sortingMap[sortingId] || {};
         state.sortingMap[sortingId] = { ...oldSort, option: newOption };
     },
-    [MutationTypes.RESET_SORTING]: (state) : void => {
+
+    [MutationTypes.RESET_SORTING]: (state: State): void => {
         state.sortingMap = {};
+    }
+};
+
+
+
+
+// sorting.actions.ts
+import { ActionContext } from 'vuex';
+import localStorage, { SORT_BY_DIRECTION, SORT_BY_PREFERENCE } from '@store/local.storage';
+import { MutationTypes } from './sorting.mutations';
+import { State, SortConfig } from './sorting.state';
+
+// Payload types
+interface UpdateSortOptionPayload {
+    sortingId: string;
+    newOption: string;
+}
+
+interface UpdateSortDirectionPayload {
+    sortingId: string;
+    newDirection: string;
+}
+
+// Define the action context type
+type SortingActionContext = ActionContext<State, State>;
+
+export default {
+    updateSortOption(
+        { commit }: SortingActionContext,
+        { sortingId, newOption }: UpdateSortOptionPayload
+    ): void {
+        commit(MutationTypes.UPDATE_SORTING_OPTION, { sortingId, newOption });
+        localStorage.setItem(`${SORT_BY_PREFERENCE}_${sortingId}`, newOption);
+    },
+
+    updateSortDirection(
+        { commit }: SortingActionContext,
+        { sortingId, newDirection }: UpdateSortDirectionPayload
+    ): void {
+        commit(MutationTypes.UPDATE_SORTING_DIRECTION, { sortingId, newDirection });
+        localStorage.setItem(`${SORT_BY_DIRECTION}_${sortingId}`, newDirection);
+    },
+
+    resetStoreSorting({ commit }: SortingActionContext): void {
+        commit(MutationTypes.RESET_SORTING);
     }
 };
