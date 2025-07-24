@@ -83,3 +83,18 @@ export default {
         commit(MutationTypes.RESET_SORTING);
     }
 };
+
+import { Component, toNative, Vue } from 'vue-facing-decorator';
+
+@Component
+class RequestSent extends Vue {
+}
+
+export default toNative(RequestSent);
+
+
+
+import { Options, Vue } from 'vue-facing-decorator';
+
+@Options({})
+export default class RequestSent extends Vue {}
